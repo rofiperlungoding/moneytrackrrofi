@@ -281,75 +281,99 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const loadTransactions = async () => {
     if (!user || !isSupabaseConfigured()) return;
 
-    const { data, error } = await supabase
-      .from('transactions')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
 
-    if (error) throw error;
+      if (error) {
+        console.error('Error loading transactions:', error);
+        return;
+      }
 
-    const formattedTransactions = data.map(t => ({
-      id: t.id,
-      type: t.type,
-      amount: parseFloat(t.amount),
-      description: t.description,
-      category: t.category,
-      date: t.date,
-      time: t.time,
-      paymentMethod: t.payment_method,
-      source: t.source,
-      merchant: t.merchant,
-      notes: t.notes,
-      recurring: t.recurring,
-      currency: t.currency
-    }));
+      const formattedTransactions = data.map(t => ({
+        id: t.id,
+        type: t.type,
+        amount: parseFloat(t.amount),
+        description: t.description,
+        category: t.category,
+        date: t.date,
+        time: t.time,
+        paymentMethod: t.payment_method,
+        source: t.source,
+        merchant: t.merchant,
+        notes: t.notes,
+        recurring: t.recurring,
+        currency: t.currency
+      }));
 
-    setTransactions(formattedTransactions);
+      setTransactions(formattedTransactions);
+    } catch (error) {
+      console.error('Error loading transactions:', error);
+      setTransactions([]);
+    }
   };
 
   const loadGoals = async () => {
     if (!user || !isSupabaseConfigured()) return;
 
-    const { data, error } = await supabase
-      .from('goals')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('goals')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
 
-    if (error) throw error;
+      if (error) {
+        console.error('Error loading goals:', error);
+        return;
+      }
 
-    const formattedGoals = data.map(g => ({
-      id: g.id,
-      title: g.title,
-      description: g.description,
-      targetAmount: parseFloat(g.target_amount),
-      currentAmount: parseFloat(g.current_amount),
-      deadline: g.deadline,
-      category: g.category,
-      priority: g.priority,
-      status: g.status,
-      createdAt: g.created_at,
-      targetCategory: g.target_category,
-      currency: g.currency
-    }));
+      const formattedGoals = data.map(g => ({
+        id: g.id,
+        title: g.title,
+        description: g.description,
+        targetAmount: parseFloat(g.target_amount),
+        currentAmount: parseFloat(g.current_amount),
+        deadline: g.deadline,
+        category: g.category,
+        priority: g.priority,
+        status: g.status,
+        createdAt: g.created_at,
+        targetCategory: g.target_category,
+        currency: g.currency
+      }));
 
-    setGoals(formattedGoals);
+      setGoals(formattedGoals);
+    } catch (error) {
+      console.error('Error loading goals:', error);
+      setGoals([]);
+    }
   };
 
   const loadSettings = async () => {
     if (!user || !isSupabaseConfigured()) return;
 
-    const { data, error } = await supabase
-      .from('user_settings')
-      .select('settings')
-      .eq('user_id', user.id)
-      .maybeSingle();
+    try {
+      const { data, error } = await supabase
+        .from('user_settings')
+        .select('settings')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-    if (error) throw error;
+      if (error) {
+        console.error('Error loading settings:', error);
+        return;
+      }
 
-    if (data?.settings) {
-      setSettings(data.settings as UserSettings);
+      if (data?.settings) {
+        setSettings(data.settings as UserSettings);
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error);
+      setSettings(initialSettings);
     }
   };
 
