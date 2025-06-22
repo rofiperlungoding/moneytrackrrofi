@@ -49,11 +49,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
+        // If this is a sign-in event (not a fresh registration), clear any registration flags
+        if (event === 'SIGNED_IN') {
+          const justRegisteredKey = `just_registered_${session.user.id}`;
+          const wasJustRegistered = localStorage.getItem(justRegisteredKey) === 'true';
+          
+          // If user wasn't just registered (i.e., this is a regular login), clear the flag
+          if (!wasJustRegistered) {
+            localStorage.removeItem(justRegisteredKey);
+          }
+        }
+        
         checkProfileSetup(session.user);
       } else {
         setNeedsProfileSetup(false);
@@ -66,11 +77,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const checkProfileSetup = (user: User) => {
+    // Check if user just registered
+    const justRegisteredKey = `just_registered_${user.id}`;
+    const wasJustRegistered = localStorage.getItem(justRegisteredKey) === 'true';
+    
     // Check if user has completed profile setup
     const hasFullName = user.user_metadata?.full_name;
-    const profileSetupComplete = localStorage.getItem(`profile_setup_complete_${user.id}`);
+    const profileSetupComplete = localStorage.getItem(`profile_setup_complete_${user.id}`) === 'true';
     
-    setNeedsProfileSetup(!hasFullName || profileSetupComplete !== 'true');
+    // Only show profile setup if:
+    // 1. User just registered AND
+    // 2. User doesn't have a full name OR profile setup is not marked as complete
+    setNeedsProfileSetup(wasJustRegistered && (!hasFullName || !profileSetupComplete));
   };
 
   const signUp = async (email: string, password: string, fullName: string) => {
@@ -87,6 +105,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         return { error };
+      }
+
+      // Mark user as just registered if signup was successful
+      if (data.user) {
+        localStorage.setItem(`just_registered_${data.user.id}`, 'true');
       }
 
       return { data };
@@ -106,6 +129,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error };
       }
 
+      // Clear any registration flags for existing users logging in
+      if (data.user) {
+        localStorage.removeItem(`just_registered_${data.user.id}`);
+      }
+
       return { data };
     } catch (error) {
       return { error };
@@ -114,6 +142,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
+      // Clear registration flags on sign out
+      if (user) {
+        localStorage.removeItem(`just_registered_${user.id}`);
+      }
+      
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
@@ -266,7 +299,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const completeProfileSetup = () => {
     if (user) {
+      // Mark profile setup as complete
       localStorage.setItem(`profile_setup_complete_${user.id}`, 'true');
+      
+      // Clear the "just registered" flag since setup is now complete
+      localStorage.removeItem(`just_registered_${user.id}`);
+      
       setNeedsProfileSetup(false);
     }
   };
