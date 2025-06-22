@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, DollarSign, Briefcase, TrendingUp, Target, Edit2, Trash2, Gift, Wallet } from 'lucide-react';
+import { Plus, DollarSign, Briefcase, TrendingUp, Target, Edit2, Trash2, Gift, Wallet, Loader2 } from 'lucide-react';
 import { useFinance, Transaction } from '../contexts/FinanceContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { IncomeForm } from './IncomeForm';
@@ -27,55 +27,107 @@ const categoryColors = {
 };
 
 export const IncomeTracker: React.FC = () => {
-  const { transactions, addTransaction, updateTransaction, deleteTransaction } = useFinance();
+  const { 
+    transactions, 
+    addTransaction, 
+    updateTransaction, 
+    deleteTransaction,
+    loading,
+    hasMoreTransactions,
+    loadMoreTransactions
+  } = useFinance();
   const { convertAmount, currentCurrency } = useCurrency();
   const [showForm, setShowForm] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  const incomes = transactions.filter(t => t.type === 'income');
+  const incomes = useMemo(() => 
+    transactions.filter(t => t.type === 'income'),
+    [transactions]
+  );
   
-  const totalIncome = incomes.reduce((sum, income) => sum + income.amount, 0);
-  const recurringIncome = incomes
-    .filter(income => income.recurring)
-    .reduce((sum, income) => sum + income.amount, 0);
-  const oneTimeIncome = totalIncome - recurringIncome;
-  const averageIncome = incomes.length > 0 ? totalIncome / incomes.length : 0;
+  const totalIncome = useMemo(() => 
+    incomes.reduce((sum, income) => sum + income.amount, 0),
+    [incomes]
+  );
+  
+  const recurringIncome = useMemo(() => 
+    incomes
+      .filter(income => income.recurring)
+      .reduce((sum, income) => sum + income.amount, 0),
+    [incomes]
+  );
+  
+  const oneTimeIncome = useMemo(() => 
+    totalIncome - recurringIncome,
+    [totalIncome, recurringIncome]
+  );
+  
+  const averageIncome = useMemo(() => 
+    incomes.length > 0 ? totalIncome / incomes.length : 0,
+    [incomes.length, totalIncome]
+  );
 
-  const handleAddIncome = (incomeData: any) => {
-    addTransaction({
-      type: 'income',
-      amount: parseFloat(incomeData.amount),
-      description: incomeData.description,
-      category: incomeData.category,
-      date: incomeData.date,
-      time: new Date().toTimeString().slice(0, 5),
-      source: incomeData.source,
-      notes: incomeData.notes,
-      recurring: incomeData.recurring,
-      currency: currentCurrency
-    });
-    setShowForm(false);
-  };
-
-  const handleEditIncome = (incomeData: any) => {
-    if (editingTransaction) {
-      updateTransaction(editingTransaction.id, {
+  const handleAddIncome = async (incomeData: any) => {
+    try {
+      await addTransaction({
+        type: 'income',
         amount: parseFloat(incomeData.amount),
         description: incomeData.description,
         category: incomeData.category,
         date: incomeData.date,
+        time: new Date().toTimeString().slice(0, 5),
         source: incomeData.source,
         notes: incomeData.notes,
         recurring: incomeData.recurring,
         currency: currentCurrency
       });
-      setEditingTransaction(null);
+      setShowForm(false);
+    } catch (error) {
+      console.error('Error adding income:', error);
     }
   };
 
-  const handleDeleteIncome = (id: string) => {
+  const handleEditIncome = async (incomeData: any) => {
+    if (editingTransaction) {
+      try {
+        await updateTransaction(editingTransaction.id, {
+          amount: parseFloat(incomeData.amount),
+          description: incomeData.description,
+          category: incomeData.category,
+          date: incomeData.date,
+          source: incomeData.source,
+          notes: incomeData.notes,
+          recurring: incomeData.recurring,
+          currency: currentCurrency
+        });
+        setEditingTransaction(null);
+      } catch (error) {
+        console.error('Error updating income:', error);
+      }
+    }
+  };
+
+  const handleDeleteIncome = async (id: string) => {
     if (confirm('Are you sure you want to delete this income?')) {
-      deleteTransaction(id);
+      try {
+        await deleteTransaction(id);
+      } catch (error) {
+        console.error('Error deleting income:', error);
+      }
+    }
+  };
+
+  const handleLoadMore = async () => {
+    if (loadingMore || !hasMoreTransactions) return;
+    
+    setLoadingMore(true);
+    try {
+      await loadMoreTransactions();
+    } catch (error) {
+      console.error('Error loading more income:', error);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -98,14 +150,21 @@ export const IncomeTracker: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold text-cinematic-text font-cinematic">Income Tracker</h1>
           <p className="text-cinematic-text-secondary mt-1 text-base">Monitor and manage your revenue streams</p>
+          {loading && (
+            <div className="flex items-center space-x-2 text-cinema-green mt-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-sm">Loading...</span>
+            </div>
+          )}
         </div>
         <motion.button
           whileHover={{ scale: 1.05, boxShadow: '0 0 25px rgba(34, 197, 94, 0.4)' }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowForm(true)}
-          className="flex items-center space-x-2 bg-premium-green text-white px-6 py-3 rounded-2xl font-medium hover:shadow-glow-green transition-all"
+          disabled={loading}
+          className="flex items-center space-x-2 bg-premium-green text-white px-6 py-3 rounded-2xl font-medium hover:shadow-glow-green transition-all disabled:opacity-50"
         >
-          <Plus className="w-4 h-4" />
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
           <span>Add Income</span>
         </motion.button>
       </motion.div>
@@ -251,8 +310,30 @@ export const IncomeTracker: React.FC = () => {
           })}
         </div>
 
+        {/* Load More Button */}
+        {hasMoreTransactions && (
+          <div className="p-4 border-t border-cinematic-border">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+              className="w-full py-3 bg-cinematic-glass border border-cinematic-border rounded-xl text-cinematic-text hover:border-cinema-green/30 transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
+            >
+              {loadingMore ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Loading more...</span>
+                </>
+              ) : (
+                <span>Load More Income</span>
+              )}
+            </motion.button>
+          </div>
+        )}
+
         {/* Empty State */}
-        {incomes.length === 0 && (
+        {incomes.length === 0 && !loading && (
           <div className="p-8 text-center">
             <Wallet className="w-10 h-10 text-cinematic-text-secondary mx-auto mb-3" />
             <h3 className="text-base font-medium text-cinematic-text mb-2">No income recorded</h3>

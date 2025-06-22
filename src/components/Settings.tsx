@@ -15,7 +15,7 @@ interface SettingsModalProps {
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
-  const { settings, updateSettings } = useFinance();
+  const { settings, updateSettings, loading } = useFinance();
   const { currentCurrency, setCurrency } = useCurrency();
   const { deleteAccount } = useAuth();
   const { 
@@ -35,14 +35,22 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
   const [accountDeleteConfirmText, setAccountDeleteConfirmText] = useState('');
   const [accountDeleteReason, setAccountDeleteReason] = useState('');
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const handleSave = () => {
-    updateSettings(formData);
-    // Also update currency context if changed
-    if (formData.profile.currency !== currentCurrency) {
-      setCurrency(formData.profile.currency);
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await updateSettings(formData);
+      // Also update currency context if changed
+      if (formData.profile.currency !== currentCurrency) {
+        setCurrency(formData.profile.currency);
+      }
+      onClose();
+    } catch (error) {
+      console.error('Error saving settings:', error);
+    } finally {
+      setSaving(false);
     }
-    onClose();
   };
 
   const handleAccountDeletion = async () => {
@@ -602,10 +610,20 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
                 whileHover={{ scale: 1.02, boxShadow: '0 0 20px rgba(34, 197, 94, 0.4)' }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleSave}
-                className="flex-1 py-2.5 bg-premium-green text-white rounded-lg font-medium hover:shadow-glow-green transition-all flex items-center justify-center space-x-1.5"
+                disabled={saving || loading}
+                className="flex-1 py-2.5 bg-premium-green text-white rounded-lg font-medium hover:shadow-glow-green transition-all flex items-center justify-center space-x-1.5 disabled:opacity-50"
               >
-                <Save className="w-3.5 h-3.5" />
-                <span>Save Changes</span>
+                {saving ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-3.5 h-3.5" />
+                    <span>Save Changes</span>
+                  </>
+                )}
               </motion.button>
             </div>
           )}
@@ -616,7 +634,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
 };
 
 export const Settings: React.FC = () => {
-  const { settings } = useFinance();
+  const { settings, loading } = useFinance();
   const { currentCurrency } = useCurrency();
   const [activeModal, setActiveModal] = useState<string | null>(null);
 
@@ -683,6 +701,7 @@ export const Settings: React.FC = () => {
         <div className="flex items-center justify-center space-x-2 mb-2">
           <SettingsIcon className="w-6 h-6 text-premium-copper" />
           <h1 className="text-3xl font-bold text-cinematic-text font-cinematic">Settings</h1>
+          {loading && <Loader2 className="w-5 h-5 animate-spin text-cinema-green" />}
         </div>
         <p className="text-lg text-cinematic-text-secondary">Customize your financial experience</p>
       </motion.div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Coins, TrendingUp, TrendingDown, Target, Star, Gift, Sparkles, Quote } from 'lucide-react';
+import { Coins, TrendingUp, TrendingDown, Target, Star, Gift, Sparkles, Quote, Loader2 } from 'lucide-react';
 import { useFinance } from '../contexts/FinanceContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { FriendlyFinancialOverview } from './FriendlyFinancialOverview';
@@ -15,7 +15,7 @@ interface DashboardProps {
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ onSectionChange }) => {
-  const { getTotalIncome, getTotalExpenses, getNetWorth, goals, getRecentChange } = useFinance();
+  const { getTotalIncome, getTotalExpenses, getNetWorth, goals, getRecentChange, loading } = useFinance();
   const { convertAmount, formatAmount } = useCurrency();
 
   const totalIncome = getTotalIncome();
@@ -79,6 +79,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSectionChange }) => {
       gradient: 'from-premium-gold to-premium-copper'
     }
   ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-cinema-green mx-auto mb-4" />
+          <p className="text-lg text-cinematic-text">Loading your financial data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3 sm:space-y-4 lg:space-y-6 px-1 sm:px-0">

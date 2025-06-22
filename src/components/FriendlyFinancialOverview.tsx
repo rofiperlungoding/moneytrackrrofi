@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Smile, Frown, Meh, TrendingUp, CalendarDays, CalendarRange, DollarSign, Wallet, ShoppingCart, BarChart, Target, Trophy, LayoutGrid, ListOrdered } from 'lucide-react';
+import { Calendar, Smile, Frown, Meh, TrendingUp, CalendarDays, CalendarRange, DollarSign, Wallet, ShoppingCart, BarChart, Target, Trophy, LayoutGrid, ListOrdered, Loader2 } from 'lucide-react';
 import { useFinance } from '../contexts/FinanceContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { CountUp } from './CountUp';
@@ -12,7 +12,7 @@ const timeframes = [
 ];
 
 export const FriendlyFinancialOverview: React.FC = () => {
-  const { getTotalIncome, getTotalExpenses, getNetWorth, settings, getLargestTransactionAmount, getUniqueCategoriesCount, getTotalTransactionsCount, getDailyAverageExpense } = useFinance();
+  const { getTotalIncome, getTotalExpenses, getNetWorth, settings, getLargestTransactionAmount, getUniqueCategoriesCount, getTotalTransactionsCount, getDailyAverageExpense, getRecentChange, loading } = useFinance();
   const { convertAmount, formatAmount } = useCurrency();
   const [selectedTimeframe, setSelectedTimeframe] = useState('1M');
 
@@ -85,6 +85,17 @@ export const FriendlyFinancialOverview: React.FC = () => {
     if (savingsRate > 30) return 'from-premium-gold/15 to-cinema-green/8';
     return 'from-financial-negative/10 to-cinema-green/5';
   };
+
+  if (loading) {
+    return (
+      <div className="bg-cinematic-surface/50 backdrop-blur-glass border border-cinema-green/15 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-5 shadow-cinematic relative overflow-hidden flex items-center justify-center min-h-[200px]">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-cinema-green mx-auto mb-2" />
+          <p className="text-sm text-cinematic-text-secondary">Loading overview...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
