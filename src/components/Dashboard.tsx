@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Coins, TrendingUp, TrendingDown, Target, Star, Gift, Sparkles, Quote } from 'lucide-react';
+import { Coins, TrendingUp, TrendingDown, Target, Star, Gift, Sparkles, Quote, Cloud, Loader2 } from 'lucide-react';
 import { useFinance } from '../contexts/FinanceContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useNotifications } from '../contexts/NotificationContext';
@@ -16,14 +16,16 @@ interface DashboardProps {
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ onSectionChange }) => {
-  const { getTotalIncome, getTotalExpenses, getNetWorth, goals, getRecentChange, transactions } = useFinance();
+  const { getTotalIncome, getTotalExpenses, getNetWorth, goals, getRecentChange, transactions, loading, syncing } = useFinance();
   const { convertAmount, formatAmount, currentCurrency } = useCurrency();
   const { generateFinancialNotifications } = useNotifications();
 
   // Generate notifications based on real data when dashboard loads
   useEffect(() => {
-    generateFinancialNotifications(goals, transactions, currentCurrency);
-  }, [goals, transactions, currentCurrency, generateFinancialNotifications]);
+    if (!loading) {
+      generateFinancialNotifications(goals, transactions, currentCurrency);
+    }
+  }, [goals, transactions, currentCurrency, generateFinancialNotifications, loading]);
 
   const totalIncome = getTotalIncome();
   const totalExpenses = getTotalExpenses();
@@ -87,8 +89,41 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSectionChange }) => {
     }
   ];
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <Loader2 className="w-8 h-8 text-cinema-green animate-spin mx-auto mb-4" />
+          <p className="text-lg text-cinematic-text-secondary">Loading your financial data...</p>
+          {syncing && (
+            <p className="text-sm text-cinema-green mt-2 flex items-center justify-center space-x-1">
+              <Cloud className="w-4 h-4" />
+              <span>Syncing with cloud</span>
+            </p>
+          )}
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3 sm:space-y-4 lg:space-y-6 px-1 sm:px-0">
+      {/* Sync status indicator */}
+      {syncing && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-cinema-green/10 backdrop-blur-glass border border-cinema-green/30 rounded-xl p-3 flex items-center justify-center space-x-2"
+        >
+          <Loader2 className="w-4 h-4 text-cinema-green animate-spin" />
+          <span className="text-cinema-green font-medium">Syncing your data with the cloud...</span>
+        </motion.div>
+      )}
+
       {/* Motivational Banner */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

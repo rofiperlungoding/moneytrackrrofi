@@ -5,12 +5,12 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Validate environment variables
-if (!supabaseUrl || supabaseUrl === 'YOUR_SUPABASE_URL') {
-  console.warn('Supabase URL not configured. Some features may not work.');
+if (!supabaseUrl || supabaseUrl === 'your_supabase_url_here') {
+  console.warn('Supabase URL not configured. Using localStorage fallback.');
 }
 
-if (!supabaseAnonKey || supabaseAnonKey === 'YOUR_SUPABASE_ANON_KEY') {
-  console.warn('Supabase Anon Key not configured. Some features may not work.');
+if (!supabaseAnonKey || supabaseAnonKey === 'your_supabase_anon_key_here') {
+  console.warn('Supabase Anon Key not configured. Using localStorage fallback.');
 }
 
 // Create and export the Supabase client
@@ -20,9 +20,9 @@ export const supabase = createClient(
 );
 
 // Export a helper to check if Supabase is properly configured
-const isSupabaseConfigured = () => {
+export const isSupabaseConfigured = () => {
   return supabaseUrl && 
-         supabaseUrl !== 'YOUR_SUPABASE_URL' && 
+         supabaseUrl !== 'your_supabase_url_here' && 
          supabaseAnonKey && 
-         supabaseAnonKey !== 'YOUR_SUPABASE_ANON_KEY';
+         supabaseAnonKey !== 'your_supabase_anon_key_here';
 };
