@@ -27,18 +27,6 @@ export const useAuth = () => {
   return context;
 };
 
-// Helper function to check if Supabase is properly configured
-const isSupabaseConfigured = (): boolean => {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  
-  return !!(supabaseUrl && 
-           supabaseAnonKey && 
-           supabaseUrl !== 'YOUR_SUPABASE_URL' && 
-           supabaseAnonKey !== 'YOUR_SUPABASE_ANON_KEY' &&
-           supabaseUrl.startsWith('http'));
-};
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -46,13 +34,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
 
   useEffect(() => {
-    // Check if Supabase is configured before attempting to connect
-    if (!isSupabaseConfigured()) {
-      console.warn('Supabase not configured, operating in local-only mode');
-      setLoading(false);
-      return;
-    }
-
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -62,9 +43,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         checkProfileSetup(session.user);
       }
       
-      setLoading(false);
-    }).catch((error) => {
-      console.error('Error getting session:', error);
       setLoading(false);
     });
 
@@ -96,10 +74,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    if (!isSupabaseConfigured()) {
-      return { error: new Error('Authentication service not available') };
-    }
-
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -122,10 +96,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (email: string, password: string) => {
-    if (!isSupabaseConfigured()) {
-      return { error: new Error('Authentication service not available') };
-    }
-
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -143,14 +113,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    if (!isSupabaseConfigured()) {
-      // Clear local state even if Supabase is not configured
-      setUser(null);
-      setSession(null);
-      setNeedsProfileSetup(false);
-      return;
-    }
-
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -163,10 +125,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const resetPassword = async (email: string) => {
-    if (!isSupabaseConfigured()) {
-      return { error: new Error('Authentication service not available') };
-    }
-
     try {
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
@@ -183,10 +141,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updateProfile = async (updates: { full_name?: string; avatar_url?: string }) => {
-    if (!isSupabaseConfigured()) {
-      return { error: new Error('Authentication service not available') };
-    }
-
     try {
       const { data, error } = await supabase.auth.updateUser({
         data: updates,
@@ -211,7 +165,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('Starting account deletion process...');
 
       // Check if Supabase URL is configured
-      if (!isSupabaseConfigured()) {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      if (!supabaseUrl || supabaseUrl === 'YOUR_SUPABASE_URL') {
         console.warn('Supabase not configured, performing local deletion only');
         
         // Clear local data immediately

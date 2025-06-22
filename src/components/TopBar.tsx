@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, Shield, RefreshCw, LogOut, Settings, ChevronDown, Loader2 } from 'lucide-react';
+import { Globe, Shield, RefreshCw, LogOut, Settings, ChevronDown } from 'lucide-react';
 import { CurrencySelector } from './CurrencySelector';
 import { NotificationCenter } from './NotificationCenter';
 import { useCurrency } from '../contexts/CurrencyContext';
@@ -14,7 +14,7 @@ interface TopBarProps {
 export const TopBar: React.FC<TopBarProps> = ({ onSectionChange }) => {
   const { refreshRates, isLoading } = useCurrency();
   const { signOut, user } = useAuth();
-  const { settings, syncing, syncData } = useFinance();
+  const { settings } = useFinance();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const handleProfileClick = () => {
@@ -35,23 +35,8 @@ export const TopBar: React.FC<TopBarProps> = ({ onSectionChange }) => {
     setShowUserMenu(false);
   };
 
-  const handleSyncData = async () => {
-    try {
-      await syncData();
-    } catch (error) {
-      console.error('Sync failed:', error);
-    }
-  };
-
   const displayName = settings.profile.name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
   const displayAvatar = settings.profile.avatar !== '👤' ? settings.profile.avatar : displayName.charAt(0).toUpperCase();
-
-  const isSupabaseConfigured = () => {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    return supabaseUrl && supabaseUrl !== 'your_supabase_url_here' && 
-           supabaseKey && supabaseKey !== 'your_supabase_anon_key_here';
-  };
 
   return (
     <motion.div
@@ -70,7 +55,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onSectionChange }) => {
           <CurrencySelector onGoToSettings={handleGoToSettings} />
         </div>
         
-        {/* Compact refresh button */}
+        {/* Compact refresh button - show on all screens but smaller on mobile */}
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -83,51 +68,10 @@ export const TopBar: React.FC<TopBarProps> = ({ onSectionChange }) => {
             {isLoading ? 'Update' : 'Refresh'}
           </span>
         </motion.button>
-
-        {/* Sync button (only show if Supabase is configured) */}
-        {isSupabaseConfigured() && (
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleSyncData}
-            disabled={syncing}
-            className="flex items-center justify-center bg-cinematic-glass backdrop-blur-glass px-1.5 sm:px-2 py-1.5 rounded-lg border border-cinema-green/20 hover:border-cinema-green/40 transition-all duration-300 disabled:opacity-50 flex-shrink-0 min-w-[32px] min-h-[32px] sm:min-w-[36px] sm:min-h-[36px]"
-          >
-            {syncing ? (
-              <Loader2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-cinema-green animate-spin" />
-            ) : (
-              <RefreshCw className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-cinema-green" />
-            )}
-            <span className="text-xs text-cinematic-text font-medium hidden lg:inline ml-1">
-              {syncing ? 'Syncing' : 'Sync'}
-            </span>
-          </motion.button>
-        )}
       </div>
 
       {/* Right section */}
       <div className="flex items-center space-x-1 sm:space-x-2">
-        {/* Sync status indicator */}
-        {isSupabaseConfigured() && (
-          <div className="hidden sm:flex items-center space-x-1">
-            <motion.div
-              animate={{ 
-                scale: [1, 1.2, 1],
-                opacity: [0.5, 1, 0.5]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className={`w-2 h-2 rounded-full ${syncing ? 'bg-premium-gold' : 'bg-cinema-green'}`}
-            />
-            <span className="text-xs text-cinematic-text-muted">
-              {syncing ? 'Syncing...' : 'Synced'}
-            </span>
-          </div>
-        )}
-
         {/* Trust indicators - Hidden on mobile and tablet */}
         <div className="hidden xl:flex items-center space-x-1">
           <motion.div
@@ -149,7 +93,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onSectionChange }) => {
             className="flex items-center space-x-1 bg-cinematic-glass backdrop-blur-glass px-2 py-1 rounded-lg border border-cinema-green/20 transition-all duration-300 min-h-[28px]"
           >
             <Globe className="w-2 h-2 text-cinema-emerald" />
-            <span className="text-xs text-cinematic-text-muted font-medium">Cloud</span>
+            <span className="text-xs text-cinematic-text-muted font-medium">Global</span>
           </motion.div>
         </div>
 
@@ -179,12 +123,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onSectionChange }) => {
             {/* User Name - Hidden on small screens */}
             <div className="hidden md:block text-left min-w-0">
               <p className="text-xs font-medium text-cinematic-text truncate max-w-[80px]">{displayName}</p>
-              <div className="flex items-center space-x-1">
-                <p className="text-xs text-cinematic-text-secondary">Finance</p>
-                {isSupabaseConfigured() && (
-                  <div className={`w-1.5 h-1.5 rounded-full ${syncing ? 'bg-premium-gold animate-pulse' : 'bg-cinema-green'}`} />
-                )}
-              </div>
+              <p className="text-xs text-cinematic-text-secondary">Finance</p>
             </div>
             
             {/* Dropdown Arrow */}
@@ -219,17 +158,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onSectionChange }) => {
                         {displayName}
                       </h3>
                       <p className="text-xs text-cinematic-text-secondary truncate">{user?.email}</p>
-                      <div className="flex items-center space-x-1">
-                        <p className="text-xs text-cinema-green">Active</p>
-                        {isSupabaseConfigured() && (
-                          <>
-                            <span className="text-xs text-cinematic-text-muted">•</span>
-                            <p className={`text-xs ${syncing ? 'text-premium-gold' : 'text-cinema-green'}`}>
-                              {syncing ? 'Syncing' : 'Cloud'}
-                            </p>
-                          </>
-                        )}
-                      </div>
+                      <p className="text-xs text-cinema-green">Active</p>
                     </div>
                   </div>
 
@@ -249,31 +178,6 @@ export const TopBar: React.FC<TopBarProps> = ({ onSectionChange }) => {
                         <p className="text-xs text-cinematic-text-secondary">Manage account</p>
                       </div>
                     </motion.button>
-
-                    {/* Sync Data Button (only if Supabase configured) */}
-                    {isSupabaseConfigured() && (
-                      <motion.button
-                        whileHover={{ scale: 1.01, x: 2 }}
-                        whileTap={{ scale: 0.99 }}
-                        onClick={handleSyncData}
-                        disabled={syncing}
-                        className="w-full flex items-center space-x-2 p-2 text-left hover:bg-cinematic-glass rounded-lg transition-all min-h-[32px] disabled:opacity-50"
-                      >
-                        <div className="w-5 h-5 bg-cinema-green/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                          {syncing ? (
-                            <Loader2 className="w-3 h-3 text-cinema-green animate-spin" />
-                          ) : (
-                            <RefreshCw className="w-3 h-3 text-cinema-green" />
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium text-cinematic-text">
-                            {syncing ? 'Syncing...' : 'Sync Data'}
-                          </p>
-                          <p className="text-xs text-cinematic-text-secondary">Update from cloud</p>
-                        </div>
-                      </motion.button>
-                    )}
                   </div>
 
                   {/* Logout Button */}
