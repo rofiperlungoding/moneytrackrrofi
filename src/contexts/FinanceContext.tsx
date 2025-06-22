@@ -162,7 +162,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         .select('count')
         .eq('user_id', user.id);
 
-      if (existingTransactions && existingTransactions.length > 0) {
+      if (existingTransactions && existingTransactions.length > 0 && existingTransactions[0].count > 0) {
         // User already has data in Supabase, skip migration
         return;
       }
