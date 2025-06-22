@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Coffee, Gamepad2, Gift, Sandwich, Car, BookOpen, Eye, DollarSign, ShoppingCart } from 'lucide-react';
 import { useFinance } from '../contexts/FinanceContext';
@@ -28,20 +28,29 @@ export const FriendlyRecentTransactions: React.FC = () => {
   const { transactions } = useFinance();
   const { convertAmount } = useCurrency();
   
-  // Get the 5 most recent transactions
-  const recentTransactions = transactions.slice(0, 5);
+  // Get the 5 most recent transactions (memoized for performance)
+  const recentTransactions = useMemo(() => 
+    transactions.slice(0, 5),
+    [transactions]
+  );
   
-  const totalSpent = recentTransactions
-    .filter(t => t.type === 'expense')
-    .reduce((sum, t) => sum + t.amount, 0);
+  const totalSpent = useMemo(() => 
+    recentTransactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0),
+    [recentTransactions]
+  );
   
-  const totalReceived = recentTransactions
-    .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + t.amount, 0);
+  const totalReceived = useMemo(() => 
+    recentTransactions
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0),
+    [recentTransactions]
+  );
 
   // Convert totals for display
-  const convertedSpent = convertAmount(totalSpent);
-  const convertedReceived = convertAmount(totalReceived);
+  const convertedSpent = useMemo(() => convertAmount(totalSpent), [convertAmount, totalSpent]);
+  const convertedReceived = useMemo(() => convertAmount(totalReceived), [convertAmount, totalReceived]);
 
   return (
     <motion.div

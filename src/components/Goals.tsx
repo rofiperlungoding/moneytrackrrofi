@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Target, Plus, Edit2, Trash2, CheckCircle, Clock, Pause, Play, Trophy } from 'lucide-react';
+import { Target, Plus, Edit2, Trash2, CheckCircle, Clock, Pause, Play, Trophy, Loader2 } from 'lucide-react';
 import { useFinance, Goal } from '../contexts/FinanceContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { GoalForm } from './GoalForm';
@@ -25,7 +25,7 @@ const categoryIcons = {
 };
 
 export const Goals: React.FC = () => {
-  const { goals, addGoal, updateGoal, deleteGoal } = useFinance();
+  const { goals, addGoal, updateGoal, deleteGoal, loading } = useFinance();
   const { convertAmount, currentCurrency } = useCurrency();
   const [showForm, setShowForm] = useState(false);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
@@ -39,15 +39,27 @@ export const Goals: React.FC = () => {
     left: 0,
   });
 
-  const filteredGoals = goals.filter(goal => 
-    filter === 'all' || goal.status === filter
+  const filteredGoals = useMemo(() => 
+    goals.filter(goal => filter === 'all' || goal.status === filter),
+    [goals, filter]
   );
 
-  const completedGoals = goals.filter(g => g.status === 'completed').length;
-  const activeGoals = goals.filter(g => g.status === 'active').length;
-  const totalProgress = goals.length > 0 
-    ? goals.reduce((sum, goal) => sum + (goal.currentAmount / goal.targetAmount * 100), 0) / goals.length 
-    : 0;
+  const completedGoals = useMemo(() => 
+    goals.filter(g => g.status === 'completed').length,
+    [goals]
+  );
+
+  const activeGoals = useMemo(() => 
+    goals.filter(g => g.status === 'active').length,
+    [goals]
+  );
+
+  const totalProgress = useMemo(() => 
+    goals.length > 0 
+      ? goals.reduce((sum, goal) => sum + (goal.currentAmount / goal.targetAmount * 100), 0) / goals.length 
+      : 0,
+    [goals]
+  );
 
   // Update indicator position when filter changes
   useEffect(() => {
@@ -66,64 +78,82 @@ export const Goals: React.FC = () => {
       }
     };
 
-    // Update position immediately
     updateIndicatorPosition();
     
-    // Update position on window resize
     const handleResize = () => updateIndicatorPosition();
     window.addEventListener('resize', handleResize);
     
     return () => window.removeEventListener('resize', handleResize);
   }, [filter]);
 
-  const handleAddGoal = (goalData: any) => {
-    addGoal({
-      title: goalData.title,
-      description: goalData.description,
-      targetAmount: parseFloat(goalData.targetAmount),
-      currentAmount: parseFloat(goalData.currentAmount) || 0,
-      deadline: goalData.deadline,
-      category: goalData.category,
-      priority: goalData.priority,
-      status: 'active',
-      currency: currentCurrency
-    });
-    setShowForm(false);
-  };
-
-  const handleEditGoal = (goalData: any) => {
-    if (editingGoal) {
-      updateGoal(editingGoal.id, {
+  const handleAddGoal = async (goalData: any) => {
+    try {
+      await addGoal({
         title: goalData.title,
         description: goalData.description,
         targetAmount: parseFloat(goalData.targetAmount),
-        currentAmount: parseFloat(goalData.currentAmount),
+        currentAmount: parseFloat(goalData.currentAmount) || 0,
         deadline: goalData.deadline,
         category: goalData.category,
         priority: goalData.priority,
-        status: goalData.status,
+        status: 'active',
         currency: currentCurrency
       });
-      setEditingGoal(null);
+      setShowForm(false);
+    } catch (error) {
+      console.error('Error adding goal:', error);
     }
   };
 
-  const handleDeleteGoal = (id: string) => {
+  const handleEditGoal = async (goalData: any) => {
+    if (editingGoal) {
+      try {
+        await updateGoal(editingGoal.id, {
+          title: goalData.title,
+          description: goalData.description,
+          targetAmount: parseFloat(goalData.targetAmount),
+          currentAmount: parseFloat(goalData.currentAmount),
+          deadline: goalData.deadline,
+          category: goalData.category,
+          priority: goalData.priority,
+          status: goalData.status,
+          currency: currentCurrency
+        });
+        setEditingGoal(null);
+      } catch (error) {
+        console.error('Error updating goal:', error);
+      }
+    }
+  };
+
+  const handleDeleteGoal = async (id: string) => {
     if (confirm('Are you sure you want to delete this goal?')) {
-      deleteGoal(id);
+      try {
+        await deleteGoal(id);
+      } catch (error) {
+        console.error('Error deleting goal:', error);
+      }
     }
   };
 
-  const handleToggleStatus = (goal: Goal) => {
+  const handleToggleStatus = async (goal: Goal) => {
     const newStatus = goal.status === 'active' ? 'paused' : 'active';
-    updateGoal(goal.id, { status: newStatus });
+    try {
+      await updateGoal(goal.id, { status: newStatus });
+    } catch (error) {
+      console.error('Error updating goal status:', error);
+    }
   };
 
-  const handleCompleteGoal = (goal: Goal) => {
-    updateGoal(goal.id, { 
-      status: 'completed',
-      currentAmount: goal.targetAmount
-    });
+  const handleCompleteGoal = async (goal: Goal) => {
+    try {
+      await updateGoal(goal.id, { 
+        status: 'completed',
+        currentAmount: goal.targetAmount
+      });
+    } catch (error) {
+      console.error('Error completing goal:', error);
+    }
   };
 
   return (
@@ -143,9 +173,10 @@ export const Goals: React.FC = () => {
           whileHover={{ scale: 1.05, boxShadow: '0 0 25px rgba(34, 197, 94, 0.4)' }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowForm(true)}
-          className="flex items-center space-x-2 bg-premium-green text-white px-6 py-3 rounded-2xl font-medium hover:shadow-glow-green transition-all"
+          disabled={loading}
+          className="flex items-center space-x-2 bg-premium-green text-white px-6 py-3 rounded-2xl font-medium hover:shadow-glow-green transition-all disabled:opacity-50"
         >
-          <Plus className="w-4 h-4" />
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
           <span>Create Goal</span>
         </motion.button>
       </motion.div>
@@ -416,7 +447,6 @@ export const Goals: React.FC = () => {
               {/* Deadline */}
               <div className="flex items-center justify-between text-xs mb-3">
                 <span className="text-cinematic-text-secondary">
-                
                   {isOverdue ? 'Overdue' : `${daysLeft} days left`}
                 </span>
                 <span className={`font-medium ${isOverdue ? 'text-financial-negative' : 'text-cinematic-text'}`}>
@@ -464,7 +494,7 @@ export const Goals: React.FC = () => {
       </div>
 
       {/* Empty State */}
-      {filteredGoals.length === 0 && (
+      {filteredGoals.length === 0 && !loading && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -490,6 +520,14 @@ export const Goals: React.FC = () => {
             </motion.button>
           )}
         </motion.div>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="w-8 h-8 animate-spin text-cinema-green" />
+          <span className="ml-2 text-cinematic-text">Loading goals...</span>
+        </div>
       )}
 
       {/* Goal Form Modal */}

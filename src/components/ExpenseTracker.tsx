@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Filter, Search, Edit2, Trash2, ShoppingBag, Coffee, Car, Home, Gamepad2, Zap, Heart, Package } from 'lucide-react';
+import { Plus, Filter, Search, Edit2, Trash2, ShoppingBag, Coffee, Car, Home, Gamepad2, Zap, Heart, Package, Loader2 } from 'lucide-react';
 import { 
   startOfDay, 
   endOfDay, 
@@ -44,15 +44,28 @@ const categoryColors = {
 };
 
 export const ExpenseTracker: React.FC = () => {
-  const { transactions, addTransaction, updateTransaction, deleteTransaction, getCategoryTotals } = useFinance();
+  const { 
+    transactions, 
+    addTransaction, 
+    updateTransaction, 
+    deleteTransaction, 
+    getCategoryTotals,
+    loading,
+    hasMoreTransactions,
+    loadMoreTransactions
+  } = useFinance();
   const { convertAmount, currentCurrency } = useCurrency();
   const [showForm, setShowForm] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [dateRange, setDateRange] = useState('this-month');
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  const expenses = transactions.filter(t => t.type === 'expense');
+  const expenses = useMemo(() => 
+    transactions.filter(t => t.type === 'expense'), 
+    [transactions]
+  );
 
   const categories = [
     'all',
@@ -76,7 +89,7 @@ export const ExpenseTracker: React.FC = () => {
   ];
 
   // Helper function to get date range boundaries
-  const getDateRangeBoundaries = (range: string) => {
+  const getDateRangeBoundaries = useCallback((range: string) => {
     const now = new Date();
     
     switch (range) {
@@ -112,47 +125,50 @@ export const ExpenseTracker: React.FC = () => {
           end: endOfMonth(now)
         };
     }
-  };
+  }, []);
 
-  // Filter expenses with improved date filtering
-  const filteredExpenses = expenses.filter(expense => {
-    // Search filter
-    const matchesSearch = expense.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         (expense.merchant && expense.merchant.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    // Category filter
-    const matchesCategory = selectedCategory === 'all' || expense.category === selectedCategory;
-    
-    // Date filter with proper date-fns handling
-    const { start, end } = getDateRangeBoundaries(dateRange);
-    const expenseDate = parseISO(expense.date);
-    const matchesDate = isWithinInterval(expenseDate, { start, end });
-    
-    return matchesSearch && matchesCategory && matchesDate;
-  });
-
-  const totalAmount = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-  const categoryTotals = getCategoryTotals();
-
-  const handleAddExpense = (expenseData: any) => {
-    addTransaction({
-      type: 'expense',
-      amount: parseFloat(expenseData.amount),
-      description: expenseData.description,
-      category: expenseData.category,
-      date: expenseData.date,
-      time: expenseData.time,
-      paymentMethod: expenseData.paymentMethod,
-      merchant: expenseData.merchant || expenseData.description,
-      notes: expenseData.notes,
-      currency: currentCurrency
+  // Memoized filtered expenses for performance
+  const filteredExpenses = useMemo(() => {
+    return expenses.filter(expense => {
+      // Search filter
+      const matchesSearch = expense.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           (expense.merchant && expense.merchant.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+      // Category filter
+      const matchesCategory = selectedCategory === 'all' || expense.category === selectedCategory;
+      
+      // Date filter with proper date-fns handling
+      const { start, end } = getDateRangeBoundaries(dateRange);
+      const expenseDate = parseISO(expense.date);
+      const matchesDate = isWithinInterval(expenseDate, { start, end });
+      
+      return matchesSearch && matchesCategory && matchesDate;
     });
-    setShowForm(false);
-  };
+  }, [expenses, searchQuery, selectedCategory, dateRange, getDateRangeBoundaries]);
 
-  const handleEditExpense = (expenseData: any) => {
-    if (editingTransaction) {
-      updateTransaction(editingTransaction.id, {
+  const totalAmount = useMemo(() => 
+    filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0),
+    [filteredExpenses]
+  );
+
+  const categoryTotals = useMemo(() => getCategoryTotals(), [getCategoryTotals]);
+
+  const averageExpense = useMemo(() => 
+    filteredExpenses.length > 0 ? totalAmount / filteredExpenses.length : 0,
+    [filteredExpenses.length, totalAmount]
+  );
+
+  const topCategory = useMemo(() => 
+    Object.keys(categoryTotals).length > 0 
+      ? Object.entries(categoryTotals).reduce((a, b) => categoryTotals[a[0]] > categoryTotals[b[0]] ? a : b)[0]
+      : 'None',
+    [categoryTotals]
+  );
+
+  const handleAddExpense = async (expenseData: any) => {
+    try {
+      await addTransaction({
+        type: 'expense',
         amount: parseFloat(expenseData.amount),
         description: expenseData.description,
         category: expenseData.category,
@@ -163,20 +179,55 @@ export const ExpenseTracker: React.FC = () => {
         notes: expenseData.notes,
         currency: currentCurrency
       });
-      setEditingTransaction(null);
+      setShowForm(false);
+    } catch (error) {
+      console.error('Error adding expense:', error);
     }
   };
 
-  const handleDeleteExpense = (id: string) => {
+  const handleEditExpense = async (expenseData: any) => {
+    if (editingTransaction) {
+      try {
+        await updateTransaction(editingTransaction.id, {
+          amount: parseFloat(expenseData.amount),
+          description: expenseData.description,
+          category: expenseData.category,
+          date: expenseData.date,
+          time: expenseData.time,
+          paymentMethod: expenseData.paymentMethod,
+          merchant: expenseData.merchant || expenseData.description,
+          notes: expenseData.notes,
+          currency: currentCurrency
+        });
+        setEditingTransaction(null);
+      } catch (error) {
+        console.error('Error updating expense:', error);
+      }
+    }
+  };
+
+  const handleDeleteExpense = async (id: string) => {
     if (confirm('Are you sure you want to delete this expense?')) {
-      deleteTransaction(id);
+      try {
+        await deleteTransaction(id);
+      } catch (error) {
+        console.error('Error deleting expense:', error);
+      }
     }
   };
 
-  const averageExpense = filteredExpenses.length > 0 ? totalAmount / filteredExpenses.length : 0;
-  const topCategory = Object.keys(categoryTotals).length > 0 
-    ? Object.entries(categoryTotals).reduce((a, b) => categoryTotals[a[0]] > categoryTotals[b[0]] ? a : b)[0]
-    : 'None';
+  const handleLoadMore = async () => {
+    if (loadingMore || !hasMoreTransactions) return;
+    
+    setLoadingMore(true);
+    try {
+      await loadMoreTransactions();
+    } catch (error) {
+      console.error('Error loading more transactions:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -355,6 +406,12 @@ export const ExpenseTracker: React.FC = () => {
                 />
               </p>
             </div>
+            {loading && (
+              <div className="flex items-center space-x-2 text-cinema-green">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span className="text-sm">Loading...</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -465,8 +522,30 @@ export const ExpenseTracker: React.FC = () => {
           })}
         </div>
 
+        {/* Load More Button */}
+        {hasMoreTransactions && (
+          <div className="p-4 border-t border-cinematic-border">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+              className="w-full py-3 bg-cinematic-glass border border-cinematic-border rounded-xl text-cinematic-text hover:border-cinema-green/30 transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
+            >
+              {loadingMore ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Loading more...</span>
+                </>
+              ) : (
+                <span>Load More Transactions</span>
+              )}
+            </motion.button>
+          </div>
+        )}
+
         {/* Empty State */}
-        {filteredExpenses.length === 0 && (
+        {filteredExpenses.length === 0 && !loading && (
           <div className="p-8 text-center">
             <Package className="w-10 h-10 text-cinematic-text-secondary mx-auto mb-3" />
             <h3 className="text-base font-medium text-cinematic-text mb-2">No expenses found</h3>

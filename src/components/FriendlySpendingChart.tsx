@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { Circle } from 'lucide-react';
@@ -45,17 +45,26 @@ const categoryColors: Record<string, string> = {
 export const FriendlySpendingChart: React.FC = () => {
   const { getCategoryTotals } = useFinance();
   const { convertAmount } = useCurrency();
-  const categoryTotals = getCategoryTotals();
+  
+  // Memoize category totals for performance
+  const categoryTotals = useMemo(() => getCategoryTotals(), [getCategoryTotals]);
 
-  const spendingData = Object.entries(categoryTotals).map(([category, amount]) => ({
-    name: category,
-    value: amount,
-    convertedValue: convertAmount(amount),
-    color: categoryColors[category] || '#6b7280'
-  }));
+  const spendingData = useMemo(() => 
+    Object.entries(categoryTotals).map(([category, amount]) => ({
+      name: category,
+      value: amount,
+      convertedValue: convertAmount(amount),
+      color: categoryColors[category] || '#6b7280'
+    })),
+    [categoryTotals, convertAmount]
+  );
 
-  const total = spendingData.reduce((sum, item) => sum + item.value, 0);
-  const convertedTotal = convertAmount(total);
+  const total = useMemo(() => 
+    spendingData.reduce((sum, item) => sum + item.value, 0),
+    [spendingData]
+  );
+
+  const convertedTotal = useMemo(() => convertAmount(total), [convertAmount, total]);
 
   if (total === 0) {
     return (
