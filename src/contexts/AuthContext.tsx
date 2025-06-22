@@ -141,19 +141,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
+    const currentUserId = user?.id;
+    
     try {
-      // Clear registration flags on sign out
-      if (user) {
-        localStorage.removeItem(`just_registered_${user.id}`);
+      // Attempt to sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.warn('Supabase signOut error (will continue with local cleanup):', error);
+      }
+    } catch (error) {
+      console.warn('Error during Supabase signOut (will continue with local cleanup):', error);
+    } finally {
+      // Always clear local state regardless of whether Supabase signOut succeeded
+      // Clear registration flags
+      if (currentUserId) {
+        localStorage.removeItem(`just_registered_${currentUserId}`);
+        localStorage.removeItem(`profile_setup_complete_${currentUserId}`);
       }
       
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      // Clear any local storage data
+      // Clear user state
+      setUser(null);
+      setSession(null);
       setNeedsProfileSetup(false);
-    } catch (error) {
-      console.error('Error signing out:', error);
     }
   };
 
