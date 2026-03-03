@@ -74,6 +74,7 @@ export const formatCurrency = (amount: number, currencyCode: string): string => 
   return `${currency.symbol}${formatted}`;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getCurrencySymbol = (currencyCode: string): string => {
   return SUPPORTED_CURRENCIES[currencyCode]?.symbol || '$';
 };

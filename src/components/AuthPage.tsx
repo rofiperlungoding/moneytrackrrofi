@@ -9,7 +9,7 @@ export const AuthPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -40,23 +40,23 @@ export const AuthPage: React.FC = () => {
         }
 
         const { error } = await signUp(formData.email, formData.password, formData.fullName);
-        
+
         if (error) {
           setMessage({ type: 'error', text: error.message });
         } else {
-          setMessage({ 
-            type: 'success', 
-            text: 'Account created successfully! Please check your email to verify your account.' 
+          setMessage({
+            type: 'success',
+            text: 'Account created successfully! Please check your email to verify your account.'
           });
         }
       } else {
         const { error } = await signIn(formData.email, formData.password);
-        
+
         if (error) {
           setMessage({ type: 'error', text: error.message });
         }
       }
-    } catch (error: any) {
+    } catch {
       setMessage({ type: 'error', text: 'An unexpected error occurred' });
     } finally {
       setLoading(false);
@@ -71,13 +71,13 @@ export const AuthPage: React.FC = () => {
 
     setLoading(true);
     const { error } = await resetPassword(formData.email);
-    
+
     if (error) {
       setMessage({ type: 'error', text: error.message });
     } else {
-      setMessage({ 
-        type: 'success', 
-        text: 'Password reset email sent! Check your inbox.' 
+      setMessage({
+        type: 'success',
+        text: 'Password reset email sent! Check your inbox.'
       });
     }
     setLoading(false);
@@ -174,7 +174,7 @@ export const AuthPage: React.FC = () => {
             {/* Auth Panel Background Effects */}
             <div className="absolute inset-0 bg-gradient-to-br from-cinema-green/5 to-cinema-emerald/5 rounded-3xl" />
             <motion.div
-              animate={{ 
+              animate={{
                 scale: [1, 1.1, 1],
                 opacity: [0.1, 0.3, 0.1]
               }}
@@ -197,9 +197,9 @@ export const AuthPage: React.FC = () => {
                   transition={{ duration: 0.6, delay: 0.6 }}
                   className="mb-4"
                 >
-                  <img 
-                    src="/Money (2).png" 
-                    alt="MoneyTrackr Logo" 
+                  <img
+                    src="/Money (2).png"
+                    alt="MoneyTrackr Logo"
                     className="h-12 w-auto object-contain mx-auto"
                   />
                 </motion.div>
@@ -219,11 +219,10 @@ export const AuthPage: React.FC = () => {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className={`mb-4 p-2.5 rounded-xl border flex items-center space-x-2 ${
-                      message.type === 'success' 
-                        ? 'bg-cinema-green/10 border-cinema-green/30 text-cinema-green' 
+                    className={`mb-4 p-2.5 rounded-xl border flex items-center space-x-2 ${message.type === 'success'
+                        ? 'bg-cinema-green/10 border-cinema-green/30 text-cinema-green'
                         : 'bg-financial-negative/10 border-financial-negative/30 text-financial-negative'
-                    }`}
+                      }`}
                   >
                     {message.type === 'success' ? (
                       <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />
@@ -333,9 +332,9 @@ export const AuthPage: React.FC = () => {
 
                 {/* Submit Button */}
                 <motion.button
-                  whileHover={{ 
-                    scale: 1.02, 
-                    boxShadow: '0 0 30px rgba(34, 197, 94, 0.4)' 
+                  whileHover={{
+                    scale: 1.02,
+                    boxShadow: '0 0 30px rgba(34, 197, 94, 0.4)'
                   }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
@@ -344,7 +343,7 @@ export const AuthPage: React.FC = () => {
                 >
                   {/* Button Background Animation */}
                   <div className="absolute inset-0 bg-gradient-to-r from-cinema-green-dark to-cinema-green-light opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
+
                   <div className="relative z-10 flex items-center space-x-2">
                     {loading ? (
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -411,7 +410,7 @@ export const AuthPage: React.FC = () => {
                     Privacy Policy
                   </a>
                 </p>
-                
+
                 {/* Trust Indicators */}
                 <div className="flex items-center justify-center space-x-3 mt-3">
                   <div className="flex items-center space-x-1">

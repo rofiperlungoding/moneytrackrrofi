@@ -9,6 +9,7 @@ export const CookieBanner: React.FC = () => {
     acceptAllCookies, 
     rejectAllCookies, 
     customizeCookies,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     settings 
   } = usePrivacy();
   

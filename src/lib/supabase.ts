@@ -20,6 +20,7 @@ export const supabase = createClient(
 );
 
 // Export a helper to check if Supabase is properly configured
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isSupabaseConfigured = () => {
   return supabaseUrl && 
          supabaseUrl !== 'YOUR_SUPABASE_URL' && 

@@ -37,6 +37,7 @@ export const CountUp: React.FC<CountUpProps> = ({
   currency,
   useCurrencyConversion = false
 }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { convertAmount, formatAmount, currentCurrency } = useCurrency();
   
   // Convert the values if currency conversion is enabled

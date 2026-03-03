@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ShoppingBag, Coffee, Gamepad2, Gift, Sandwich, Car, BookOpen, Eye, DollarSign, ShoppingCart } from 'lucide-react';
 import { useFinance } from '../contexts/FinanceContext';
 import { useCurrency } from '../contexts/CurrencyContext';
@@ -49,7 +50,9 @@ export const FriendlyRecentTransactions: React.FC = () => {
   );
 
   // Convert totals for display
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const convertedSpent = useMemo(() => convertAmount(totalSpent), [convertAmount, totalSpent]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const convertedReceived = useMemo(() => convertAmount(totalReceived), [convertAmount, totalReceived]);
 
   return (

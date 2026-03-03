@@ -1,36 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { X, Upload, Calendar, DollarSign } from 'lucide-react';
 import { Transaction } from '../contexts/FinanceContext';
+import { useReferenceData } from '../contexts/ReferenceDataContext';
 
 interface ExpenseFormProps {
   expense?: Transaction | null;
   onClose: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmit: (expense: any) => void;
 }
 
-const categories = [
-  'Food & Dining',
-  'Transportation',
-  'Housing',
-  'Entertainment',
-  'Utilities',
-  'Healthcare',
-  'Shopping',
-  'Education',
-  'Other'
-];
-
-const paymentMethods = [
-  'Cash',
-  'Credit Card',
-  'Debit Card',
-  'Digital Wallet',
-  'Bank Transfer',
-  'Other'
-];
+// Categories and payment methods are now fetched from database via ReferenceDataContext
 
 export const ExpenseForm: React.FC<ExpenseFormProps> = ({ expense, onClose, onSubmit }) => {
+  const { expenseCategories, paymentMethods } = useReferenceData();
+  const categories = expenseCategories.map(c => c.name);
   const [formData, setFormData] = useState({
     amount: '',
     description: '',
@@ -90,7 +76,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ expense, onClose, onSu
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       onSubmit(formData);
     }
@@ -147,9 +133,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ expense, onClose, onSu
                   required
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  className={`w-full pl-10 pr-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                    errors.amount ? 'border-financial-negative' : 'border-cinematic-border'
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.amount ? 'border-financial-negative' : 'border-cinematic-border'
+                    }`}
                   placeholder="0.00"
                 />
               </div>
@@ -166,9 +151,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ expense, onClose, onSu
                 required
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                  errors.description ? 'border-financial-negative' : 'border-cinematic-border'
-                }`}
+                className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.description ? 'border-financial-negative' : 'border-cinematic-border'
+                  }`}
                 placeholder="What did you spend on?"
               />
               {errors.description && <p className="text-financial-negative text-sm mt-1">{errors.description}</p>}
@@ -184,9 +168,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ expense, onClose, onSu
                   required
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                    errors.category ? 'border-financial-negative' : 'border-cinematic-border'
-                  }`}
+                  className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.category ? 'border-financial-negative' : 'border-cinematic-border'
+                    }`}
                 >
                   <option value="" className="bg-cinematic-surface text-cinematic-text">Select category</option>
                   {categories.map((category) => (
@@ -206,14 +189,13 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ expense, onClose, onSu
                   required
                   value={formData.paymentMethod}
                   onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
-                  className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                    errors.paymentMethod ? 'border-financial-negative' : 'border-cinematic-border'
-                  }`}
+                  className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.paymentMethod ? 'border-financial-negative' : 'border-cinematic-border'
+                    }`}
                 >
                   <option value="" className="bg-cinematic-surface text-cinematic-text">Select method</option>
                   {paymentMethods.map((method) => (
-                    <option key={method} value={method} className="bg-cinematic-surface text-cinematic-text">
-                      {method}
+                    <option key={method.id || method.name} value={method.name} className="bg-cinematic-surface text-cinematic-text">
+                      {method.name}
                     </option>
                   ))}
                 </select>
@@ -246,9 +228,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ expense, onClose, onSu
                   required
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                    errors.date ? 'border-financial-negative' : 'border-cinematic-border'
-                  }`}
+                  className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.date ? 'border-financial-negative' : 'border-cinematic-border'
+                    }`}
                 />
                 {errors.date && <p className="text-financial-negative text-sm mt-1">{errors.date}</p>}
               </div>
@@ -262,9 +243,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ expense, onClose, onSu
                   required
                   value={formData.time}
                   onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                  className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                    errors.time ? 'border-financial-negative' : 'border-cinematic-border'
-                  }`}
+                  className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.time ? 'border-financial-negative' : 'border-cinematic-border'
+                    }`}
                 />
                 {errors.time && <p className="text-financial-negative text-sm mt-1">{errors.time}</p>}
               </div>

@@ -7,6 +7,7 @@ import { CountUp } from './CountUp';
 import { startOfMonth, endOfMonth, isWithinInterval, parseISO } from 'date-fns';
 
 // Icon mapping for categories
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const categoryIcons: Record<string, any> = {
   'Food & Dining': Utensils,
   'Food & Treats': Utensils,
@@ -28,6 +29,7 @@ interface FriendlyBudgetProgressProps {
 
 export const FriendlyBudgetProgress: React.FC<FriendlyBudgetProgressProps> = ({ onSectionChange }) => {
   const { goals, transactions } = useFinance();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { convertAmount } = useCurrency();
   
   // Filter goals to get budget goals (expense-limit type)

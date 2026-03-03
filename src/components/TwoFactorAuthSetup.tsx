@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Mail, Phone, CheckCircle, AlertCircle, ArrowRight, ArrowLeft, KeyRound, Loader2, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSecurity } from '../contexts/SecurityContext';

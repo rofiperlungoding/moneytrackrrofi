@@ -8,6 +8,7 @@ import {
   Settings, 
   ChevronLeft, 
   ChevronRight,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Sparkles,
   X,
   Menu

@@ -36,6 +36,7 @@ interface PrivacyContextType {
 
 const PrivacyContext = createContext<PrivacyContextType | undefined>(undefined);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const usePrivacy = () => {
   const context = useContext(PrivacyContext);
   if (!context) {

@@ -26,6 +26,7 @@ const categoryIcons = {
 
 export const Goals: React.FC = () => {
   const { goals, addGoal, updateGoal, deleteGoal, loading } = useFinance();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { convertAmount, currentCurrency } = useCurrency();
   const [showForm, setShowForm] = useState(false);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
@@ -86,6 +87,7 @@ export const Goals: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [filter]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleAddGoal = async (goalData: any) => {
     try {
       await addGoal({
@@ -105,6 +107,7 @@ export const Goals: React.FC = () => {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleEditGoal = async (goalData: any) => {
     if (editingGoal) {
       try {

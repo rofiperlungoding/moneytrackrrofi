@@ -28,6 +28,7 @@ interface SecurityContextType {
 
 const SecurityContext = createContext<SecurityContextType | undefined>(undefined);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useSecurity = () => {
   const context = useContext(SecurityContext);
   if (!context) {

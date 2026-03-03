@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { SUPPORTED_CURRENCIES, convertCurrency, formatCurrency, updateExchangeRates } from '../utils/currency';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useReferenceData, DbCurrency } from './ReferenceDataContext';
 
 interface CurrencyContextType {
   currentCurrency: string;
@@ -9,10 +9,12 @@ interface CurrencyContextType {
   formatAmount: (amount: number, currency?: string) => string;
   refreshRates: () => Promise<void>;
   isLoading: boolean;
+  availableCurrencies: DbCurrency[];
 }
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useCurrency = () => {
   const context = useContext(CurrencyContext);
   if (!context) {
@@ -22,57 +24,63 @@ export const useCurrency = () => {
 };
 
 export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { currencies, currencyMap, refresh } = useReferenceData();
   const [currentCurrency, setCurrentCurrency] = useState('USD');
   const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(false);
 
+  // Load saved currency preference
   useEffect(() => {
     const saved = localStorage.getItem('currency');
-    if (saved && SUPPORTED_CURRENCIES[saved]) {
+    if (saved && currencyMap[saved]) {
       setCurrentCurrency(saved);
     }
-  }, []);
+  }, [currencyMap]);
 
+  // Save currency preference
   useEffect(() => {
     localStorage.setItem('currency', currentCurrency);
   }, [currentCurrency]);
 
+  // Build exchange rates from database currencies
   useEffect(() => {
-    // Initialize exchange rates
     const rates: Record<string, number> = {};
-    Object.entries(SUPPORTED_CURRENCIES).forEach(([code, currency]) => {
-      rates[code] = currency.rate;
+    currencies.forEach((c) => {
+      rates[c.code] = c.rate;
     });
     setExchangeRates(rates);
-
-    // Set up periodic rate updates (every 5 minutes in demo)
-    const interval = setInterval(refreshRates, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
+  }, [currencies]);
 
   const setCurrency = (currency: string) => {
-    if (SUPPORTED_CURRENCIES[currency]) {
+    if (currencyMap[currency]) {
       setCurrentCurrency(currency);
     }
   };
 
-  const convertAmount = (amount: number, fromCurrency = 'USD'): number => {
-    return convertCurrency(amount, fromCurrency, currentCurrency);
-  };
+  const convertAmount = useCallback((amount: number, fromCurrency = 'USD'): number => {
+    if (fromCurrency === currentCurrency) return amount;
+    const fromRate = exchangeRates[fromCurrency] || 1;
+    const toRate = exchangeRates[currentCurrency] || 1;
+    const usdAmount = amount / fromRate;
+    return usdAmount * toRate;
+  }, [currentCurrency, exchangeRates]);
 
-  const formatAmount = (amount: number, currency = currentCurrency): string => {
-    return formatCurrency(amount, currency);
-  };
+  const formatAmount = useCallback((amount: number, currency = currentCurrency): string => {
+    const curr = currencyMap[currency];
+    if (!curr) return `${amount}`;
+
+    const formatted = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: curr.decimal_places,
+      maximumFractionDigits: curr.decimal_places,
+    }).format(Math.abs(amount));
+
+    return `${curr.symbol}${formatted}`;
+  }, [currentCurrency, currencyMap]);
 
   const refreshRates = async () => {
     setIsLoading(true);
     try {
-      await updateExchangeRates();
-      const rates: Record<string, number> = {};
-      Object.entries(SUPPORTED_CURRENCIES).forEach(([code, currency]) => {
-        rates[code] = currency.rate;
-      });
-      setExchangeRates(rates);
+      await refresh();
     } catch (error) {
       console.error('Failed to update exchange rates:', error);
     } finally {
@@ -88,7 +96,8 @@ export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       convertAmount,
       formatAmount,
       refreshRates,
-      isLoading
+      isLoading,
+      availableCurrencies: currencies,
     }}>
       {children}
     </CurrencyContext.Provider>

@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "brand_name": "MoneyTrackr",
+    "description": "Core design tokens for Project MoneyTrackr — Personal Finance Management."
+  },
+  "colors": {
+    "primary": {
+      "DEFAULT": "#0A84FF",
+      "hover": "#0070E0",
+      "foreground": "#FFFFFF"
+    },
+    "secondary": {
+      "DEFAULT": "#1C1C1E",
+      "foreground": "#F5F5F7"
+    },
+    "background": "#000000",
+    "foreground": "#F5F5F7",
+    "muted": "#2C2C2E",
+    "accent": "#30D158",
+    "destructive": "#FF453A",
+    "success": "#30D158",
+    "warning": "#FFD60A",
+    "security": {
+      "safe": "#30D158",
+      "caution": "#FFD60A",
+      "danger": "#FF453A",
+      "audit": "#BF5AF2"
+    }
+  },
+  "typography": {
+    "font_family_headings": [
+      "SF Pro Display",
+      "Inter",
+      "sans-serif"
+    ],
+    "font_family_body": [
+      "SF Pro Text",
+      "Inter",
+      "sans-serif"
+    ],
+    "font_family_mono": [
+      "SF Mono",
+      "JetBrains Mono",
+      "monospace"
+    ],
+    "font_weight_bold": "700",
+    "font_weight_medium": "500",
+    "font_weight_normal": "400"
+  },
+  "ui": {
+    "border_radius_default": "0.75rem",
+    "border_radius_small": "0.375rem",
+    "border_radius_large": "1rem",
+    "spacing_base_unit": "4px"
+  }
+}

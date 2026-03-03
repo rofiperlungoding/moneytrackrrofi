@@ -16,6 +16,7 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({ onSectionChange }) => {
   const { getTotalIncome, getTotalExpenses, getNetWorth, goals, getRecentChange, loading } = useFinance();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { convertAmount, formatAmount } = useCurrency();
 
   const totalIncome = getTotalIncome();

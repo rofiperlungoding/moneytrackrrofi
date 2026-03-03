@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings as SettingsIcon, Palette, Bell, Shield, User, Save, X, Download, Trash2, Eye, EyeOff, AlertTriangle, UserX, KeyRound, CheckCircle, Loader2 } from 'lucide-react';
-import { useFinance, UserSettings } from '../contexts/FinanceContext';
+import { Settings as SettingsIcon, Palette, Bell, Shield, User, Save, X, Download, Trash2, Eye, EyeOff, AlertTriangle, UserX, KeyRound, Loader2, Database } from 'lucide-react';
+import { useFinance } from '../contexts/FinanceContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { usePrivacy } from '../contexts/PrivacyContext';
 import { useAuth } from '../contexts/AuthContext';
 import { SecurityDashboard } from './SecurityDashboard';
 import { TwoFactorAuthSetup } from './TwoFactorAuthSetup';
-import { SUPPORTED_CURRENCIES } from '../utils/currency';
+import { DataManagementSettings } from './DataManagementSettings';
 
 interface SettingsModalProps {
   category: string;
@@ -16,17 +16,20 @@ interface SettingsModalProps {
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
   const { settings, updateSettings, loading } = useFinance();
-  const { currentCurrency, setCurrency } = useCurrency();
+  const { currentCurrency, setCurrency, availableCurrencies } = useCurrency();
   const { deleteAccount } = useAuth();
-  const { 
-    settings: privacySettings, 
-    updatePrivacySettings,
+  const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    updatePrivacySettings: _unusedUpdate,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    settings: _unusedSettings,
     requestDataExport,
     requestDataDeletion,
     generatePrivacyReport,
-    clearAllData
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    clearAllData: _unusedClear
   } = usePrivacy();
-  
+
   const [formData, setFormData] = useState(settings);
   const [deleteReason, setDeleteReason] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -61,12 +64,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
     setDeletingAccount(true);
     try {
       const result = await deleteAccount(accountDeleteReason);
-      
+
       if (result.error) {
         console.error('Error deleting account:', result.error);
-        alert(`Failed to delete account: ${result.error.message}`);
+        alert(`Failed to delete account: ${result.error.message} `);
       } else if (result.warning) {
-        alert(`Account deletion initiated: ${result.warning}`);
+        alert(`Account deletion initiated: ${result.warning} `);
         // Close the modal since the user will be signed out
         setShowAccountDeleteConfirm(false);
       } else if (result.success) {
@@ -103,7 +106,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
           className="w-full px-3 py-2.5 bg-cinematic-glass border border-cinematic-border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300"
         />
       </div>
-      
+
       <div>
         <label className="block text-sm font-medium text-cinematic-text mb-2">Avatar</label>
         <div className="flex space-x-2">
@@ -114,11 +117,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
                 ...formData,
                 profile: { ...formData.profile, avatar }
               })}
-              className={`w-12 h-12 text-xl rounded-xl border-2 transition-all ${
-                formData.profile.avatar === avatar
+              className={`w - 12 h - 12 text - xl rounded - xl border - 2 transition - all ${formData.profile.avatar === avatar
                   ? 'border-cinema-green bg-cinema-green/10'
                   : 'border-cinematic-border hover:border-cinema-green/30'
-              }`}
+                } `}
             >
               {avatar}
             </button>
@@ -136,9 +138,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
           })}
           className="w-full px-3 py-2.5 bg-cinematic-glass border border-cinematic-border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300"
         >
-          {Object.entries(SUPPORTED_CURRENCIES).map(([code, currency]) => (
-            <option key={code} value={code} className="bg-cinematic-surface text-cinematic-text">
-              {code} ({currency.symbol}) - {currency.name}
+          {availableCurrencies.map((currency) => (
+            <option key={currency.code} value={currency.code} className="bg-cinematic-surface text-cinematic-text">
+              {currency.code} ({currency.symbol}) - {currency.name}
             </option>
           ))}
         </select>
@@ -153,7 +155,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
         <div className="bg-financial-negative/5 border border-financial-negative/20 rounded-xl p-4">
           <h5 className="font-bold text-financial-negative mb-2">Delete Account Permanently</h5>
           <p className="text-xs text-cinematic-text-secondary mb-4">
-            This action will permanently delete your account and all your financial data, goals, and settings. 
+            This action will permanently delete your account and all your financial data, goals, and settings.
             This action cannot be undone and you will not be able to recover your data.
           </p>
           <motion.button
@@ -343,13 +345,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
                 ...formData,
                 appearance: { ...formData.appearance, colorScheme: scheme.value }
               })}
-              className={`p-3 rounded-xl border-2 transition-all ${
-                formData.appearance.colorScheme === scheme.value
+              className={`p - 3 rounded - xl border - 2 transition - all ${formData.appearance.colorScheme === scheme.value
                   ? 'border-cinema-green bg-cinema-green/10'
                   : 'border-cinematic-border hover:border-cinema-green/30'
-              }`}
+                } `}
             >
-              <div className={`w-full h-6 ${scheme.color} rounded-lg mb-2`} />
+              <div className={`w - full h - 6 ${scheme.color} rounded - lg mb - 2`} />
               <span className="text-xs text-cinematic-text">{scheme.name}</span>
             </button>
           ))}
@@ -368,13 +369,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
               key={size.value}
               onClick={() => setFormData({
                 ...formData,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 appearance: { ...formData.appearance, fontSize: size.value as any }
               })}
-              className={`flex-1 py-2.5 px-3 rounded-xl border transition-all ${
-                formData.appearance.fontSize === size.value
+              className={`flex - 1 py - 2.5 px - 3 rounded - xl border transition - all ${formData.appearance.fontSize === size.value
                   ? 'border-cinema-green bg-cinema-green/10 text-cinema-green'
                   : 'border-cinematic-border text-cinematic-text hover:border-cinema-green/30'
-              }`}
+                } `}
             >
               {size.label}
             </button>
@@ -393,13 +394,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
               key={layout.value}
               onClick={() => setFormData({
                 ...formData,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 appearance: { ...formData.appearance, layout: layout.value as any }
               })}
-              className={`flex-1 py-2.5 px-3 rounded-xl border transition-all ${
-                formData.appearance.layout === layout.value
+              className={`flex - 1 py - 2.5 px - 3 rounded - xl border transition - all ${formData.appearance.layout === layout.value
                   ? 'border-cinema-green bg-cinema-green/10 text-cinema-green'
                   : 'border-cinematic-border text-cinematic-text hover:border-cinema-green/30'
-              }`}
+                } `}
             >
               {layout.label}
             </button>
@@ -593,10 +594,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
             {category === 'privacy' && renderPrivacySettings()}
             {category === 'security' && <SecurityDashboard />}
             {category === 'twoFactorAuth' && <TwoFactorAuthSetup />}
+            {category === 'dataManagement' && <DataManagementSettings />}
           </div>
 
-          {/* Actions - Only show save/cancel for non-security and non-2FA settings */}
-          {category !== 'security' && category !== 'twoFactorAuth' && (
+          {/* Actions - Only show save/cancel for non-security, non-2FA, non-dataManagement settings */}
+          {category !== 'security' && category !== 'twoFactorAuth' && category !== 'dataManagement' && (
             <div className="flex space-x-3">
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -635,7 +637,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ category, onClose }) => {
 
 export const Settings: React.FC = () => {
   const { settings, loading } = useFinance();
-  const { currentCurrency } = useCurrency();
+  const { currentCurrency, availableCurrencies } = useCurrency();
   const [activeModal, setActiveModal] = useState<string | null>(null);
 
   const settingsCategories = [
@@ -686,6 +688,14 @@ export const Settings: React.FC = () => {
       description: 'Add an extra layer of security to your account',
       items: ['Email Verification', 'Phone Verification'],
       key: 'twoFactorAuth'
+    },
+    {
+      title: 'Data Management',
+      icon: Database,
+      color: 'cinema-green-light',
+      description: 'Manage custom currencies, categories, and more',
+      items: ['Currencies', 'Categories', 'Payment Methods'],
+      key: 'dataManagement'
     }
   ];
 
@@ -721,18 +731,16 @@ export const Settings: React.FC = () => {
             <div>
               <h3 className="text-xl font-bold text-cinematic-text">Hello, {settings.profile.name}!</h3>
               <p className="text-cinematic-text-secondary text-base">
-                Currency: {SUPPORTED_CURRENCIES[currentCurrency]?.symbol} {currentCurrency} • Theme: {settings.appearance.colorScheme}
+                Currency: {availableCurrencies.find(c => c.code === currentCurrency)?.symbol} {currentCurrency} • Theme: {settings.appearance.colorScheme}
               </p>
               <div className="flex items-center space-x-3 mt-2 text-xs">
-                <span className={`px-2.5 py-0.5 rounded-full ${
-                  settings.privacy.showBalances ? 'bg-cinema-green/20 text-cinema-green' : 'bg-financial-negative/20 text-financial-negative'
-                }`}>
+                <span className={`px - 2.5 py - 0.5 rounded - full ${settings.privacy.showBalances ? 'bg-cinema-green/20 text-cinema-green' : 'bg-financial-negative/20 text-financial-negative'
+                  } `}>
                   {settings.privacy.showBalances ? <Eye className="w-3 h-3 inline mr-1" /> : <EyeOff className="w-3 h-3 inline mr-1" />}
                   Balances {settings.privacy.showBalances ? 'Visible' : 'Hidden'}
                 </span>
-                <span className={`px-2.5 py-0.5 rounded-full ${
-                  settings.notifications.budgetAlerts ? 'bg-cinema-green-light/20 text-cinema-green-light' : 'bg-cinematic-text-muted/20 text-cinematic-text-muted'
-                }`}>
+                <span className={`px - 2.5 py - 0.5 rounded - full ${settings.notifications.budgetAlerts ? 'bg-cinema-green-light/20 text-cinema-green-light' : 'bg-cinematic-text-muted/20 text-cinematic-text-muted'
+                  } `}>
                   <Bell className="w-3 h-3 inline mr-1" />
                   Alerts {settings.notifications.budgetAlerts ? 'On' : 'Off'}
                 </span>
@@ -751,19 +759,19 @@ export const Settings: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 + index * 0.1, type: "spring" }}
             whileHover={{ scale: 1.05, y: -5, boxShadow: '0 25px 50px rgba(34, 197, 94, 0.2)' }}
-            className={`bg-cinematic-surface/60 backdrop-blur-premium border-2 border-${category.color}/20 rounded-3xl p-6 hover:border-${category.color}/40 transition-all duration-500 relative overflow-hidden cursor-pointer shadow-cinematic`}
+            className={`bg - cinematic - surface / 60 backdrop - blur - premium border - 2 border - ${category.color} /20 rounded-3xl p-6 hover:border-${category.color}/40 transition - all duration - 500 relative overflow - hidden cursor - pointer shadow - cinematic`}
             onClick={() => setActiveModal(category.key)}
           >
             {/* Background decoration */}
-            <div className={`absolute top-0 right-0 w-24 h-24 bg-${category.color}/10 rounded-full blur-2xl`} />
-            
+            <div className={`absolute top - 0 right - 0 w - 24 h - 24 bg - ${category.color} /10 rounded-full blur-2xl`} />
+
             <div className="relative">
               <div className="flex items-center space-x-3 mb-4">
                 <div className={`p-3 bg-${category.color}/20 rounded-2xl`}>
                   <category.icon className={`w-6 h-6 text-${category.color}`} />
                 </div>
               </div>
-              
+
               <div className="mb-4">
                 <h3 className={`text-lg font-bold text-${category.color} font-cinematic mb-2`}>{category.title}</h3>
                 <p className="text-cinematic-text-secondary text-sm">{category.description}</p>
@@ -784,17 +792,19 @@ export const Settings: React.FC = () => {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </motion.div >
         ))}
-      </div>
+      </div >
 
       {/* Settings Modal */}
-      {activeModal && (
-        <SettingsModal
-          category={activeModal}
-          onClose={() => setActiveModal(null)}
-        />
-      )}
-    </div>
+      {
+        activeModal && (
+          <SettingsModal
+            category={activeModal}
+            onClose={() => setActiveModal(null)}
+          />
+        )
+      }
+    </div >
   );
 };

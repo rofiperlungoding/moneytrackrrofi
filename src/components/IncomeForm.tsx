@@ -1,37 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { X, DollarSign, Calendar } from 'lucide-react';
 import { Transaction } from '../contexts/FinanceContext';
+import { useReferenceData } from '../contexts/ReferenceDataContext';
 
 interface IncomeFormProps {
   income?: Transaction | null;
   onClose: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmit: (income: any) => void;
 }
 
-const incomeSources = [
-  'Salary',
-  'Freelance',
-  'Investment',
-  'Business',
-  'Allowance',
-  'Gifts',
-  'Commission',
-  'Bonus',
-  'Other'
-];
-
-const incomeCategories = [
-  'Employment',
-  'Freelance',
-  'Investment',
-  'Business',
-  'Allowance',
-  'Gifts',
-  'Other'
-];
+// Income sources and categories are now fetched from database via ReferenceDataContext
 
 export const IncomeForm: React.FC<IncomeFormProps> = ({ income, onClose, onSubmit }) => {
+  const { incomeCategories: dbIncomeCategories, incomeSources: dbIncomeSources } = useReferenceData();
+  const incomeSources = dbIncomeSources.map(s => s.name);
+  const incomeCategories = dbIncomeCategories.map(c => c.name);
   const [formData, setFormData] = useState({
     amount: '',
     source: '',
@@ -84,7 +70,7 @@ export const IncomeForm: React.FC<IncomeFormProps> = ({ income, onClose, onSubmi
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       onSubmit(formData);
     }
@@ -134,9 +120,8 @@ export const IncomeForm: React.FC<IncomeFormProps> = ({ income, onClose, onSubmi
                   required
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  className={`w-full pl-10 pr-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                    errors.amount ? 'border-financial-negative' : 'border-cinematic-border'
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.amount ? 'border-financial-negative' : 'border-cinematic-border'
+                    }`}
                   placeholder="0.00"
                 />
               </div>
@@ -153,9 +138,8 @@ export const IncomeForm: React.FC<IncomeFormProps> = ({ income, onClose, onSubmi
                 required
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                  errors.description ? 'border-financial-negative' : 'border-cinematic-border'
-                }`}
+                className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.description ? 'border-financial-negative' : 'border-cinematic-border'
+                  }`}
                 placeholder="What is this income for?"
               />
               {errors.description && <p className="text-financial-negative text-sm mt-1">{errors.description}</p>}
@@ -171,9 +155,8 @@ export const IncomeForm: React.FC<IncomeFormProps> = ({ income, onClose, onSubmi
                   required
                   value={formData.source}
                   onChange={(e) => setFormData({ ...formData, source: e.target.value })}
-                  className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                    errors.source ? 'border-financial-negative' : 'border-cinematic-border'
-                  }`}
+                  className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.source ? 'border-financial-negative' : 'border-cinematic-border'
+                    }`}
                 >
                   <option value="" className="bg-cinematic-surface text-cinematic-text">Select source</option>
                   {incomeSources.map((source) => (
@@ -193,9 +176,8 @@ export const IncomeForm: React.FC<IncomeFormProps> = ({ income, onClose, onSubmi
                   required
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                    errors.category ? 'border-financial-negative' : 'border-cinematic-border'
-                  }`}
+                  className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.category ? 'border-financial-negative' : 'border-cinematic-border'
+                    }`}
                 >
                   <option value="" className="bg-cinematic-surface text-cinematic-text">Select category</option>
                   {incomeCategories.map((category) => (
@@ -218,9 +200,8 @@ export const IncomeForm: React.FC<IncomeFormProps> = ({ income, onClose, onSubmi
                 required
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                  errors.date ? 'border-financial-negative' : 'border-cinematic-border'
-                }`}
+                className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.date ? 'border-financial-negative' : 'border-cinematic-border'
+                  }`}
               />
               {errors.date && <p className="text-financial-negative text-sm mt-1">{errors.date}</p>}
             </div>

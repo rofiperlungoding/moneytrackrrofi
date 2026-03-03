@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Target, DollarSign, Calendar } from 'lucide-react';
+import { X, DollarSign } from 'lucide-react';
 import { Goal } from '../contexts/FinanceContext';
+import { useReferenceData } from '../contexts/ReferenceDataContext';
 
 interface GoalFormProps {
   goal?: Goal | null;
   onClose: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmit: (goal: any) => void;
 }
 
-const categories = [
-  { value: 'savings', label: 'Savings Goal', description: 'Save money for something specific' },
-  { value: 'expense-limit', label: 'Expense Limit', description: 'Set spending limits for categories' },
-  { value: 'income-target', label: 'Income Target', description: 'Set income goals to achieve' }
-];
+// Goal categories are now fetched from database via ReferenceDataContext
+
+const GOAL_LABEL_MAP: Record<string, string> = {
+  'savings': 'Savings Goal',
+  'expense-limit': 'Expense Limit',
+  'income-target': 'Income Target',
+};
 
 const priorities = [
   { value: 'low', label: 'Low Priority', color: 'text-cinema-green' },
@@ -28,6 +32,12 @@ const statuses = [
 ];
 
 export const GoalForm: React.FC<GoalFormProps> = ({ goal, onClose, onSubmit }) => {
+  const { goalCategories: dbGoalCategories } = useReferenceData();
+  const categories = dbGoalCategories.map(c => ({
+    value: c.name,
+    label: GOAL_LABEL_MAP[c.name] || c.name,
+    description: c.description || '',
+  }));
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -84,7 +94,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ goal, onClose, onSubmit }) =
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       onSubmit(formData);
     }
@@ -131,9 +141,8 @@ export const GoalForm: React.FC<GoalFormProps> = ({ goal, onClose, onSubmit }) =
                 required
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                  errors.title ? 'border-financial-negative' : 'border-cinematic-border'
-                }`}
+                className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.title ? 'border-financial-negative' : 'border-cinematic-border'
+                  }`}
                 placeholder="e.g., Emergency Fund, New Laptop, etc."
               />
               {errors.title && <p className="text-financial-negative text-sm mt-1">{errors.title}</p>}
@@ -149,9 +158,8 @@ export const GoalForm: React.FC<GoalFormProps> = ({ goal, onClose, onSubmit }) =
                 required
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 resize-none ${
-                  errors.description ? 'border-financial-negative' : 'border-cinematic-border'
-                }`}
+                className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 resize-none ${errors.description ? 'border-financial-negative' : 'border-cinematic-border'
+                  }`}
                 placeholder="Describe your goal and why it's important to you"
               />
               {errors.description && <p className="text-financial-negative text-sm mt-1">{errors.description}</p>}
@@ -167,17 +175,17 @@ export const GoalForm: React.FC<GoalFormProps> = ({ goal, onClose, onSubmit }) =
                   <motion.label
                     key={category.value}
                     whileHover={{ scale: 1.02 }}
-                    className={`flex items-center space-x-3 p-3 border rounded-lg cursor-pointer transition-all ${
-                      formData.category === category.value
-                        ? 'border-cinema-green bg-cinema-green/5'
-                        : 'border-cinematic-border hover:border-cinema-green/30'
-                    }`}
+                    className={`flex items-center space-x-3 p-3 border rounded-lg cursor-pointer transition-all ${formData.category === category.value
+                      ? 'border-cinema-green bg-cinema-green/5'
+                      : 'border-cinematic-border hover:border-cinema-green/30'
+                      }`}
                   >
                     <input
                       type="radio"
                       name="category"
                       value={category.value}
                       checked={formData.category === category.value}
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
                       className="text-cinema-green focus:ring-cinema-green"
                     />
@@ -203,9 +211,8 @@ export const GoalForm: React.FC<GoalFormProps> = ({ goal, onClose, onSubmit }) =
                   required
                   value={formData.targetAmount}
                   onChange={(e) => setFormData({ ...formData, targetAmount: e.target.value })}
-                  className={`w-full pl-10 pr-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                    errors.targetAmount ? 'border-financial-negative' : 'border-cinematic-border'
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.targetAmount ? 'border-financial-negative' : 'border-cinematic-border'
+                    }`}
                   placeholder="0.00"
                 />
               </div>
@@ -224,9 +231,8 @@ export const GoalForm: React.FC<GoalFormProps> = ({ goal, onClose, onSubmit }) =
                   step="0.01"
                   value={formData.currentAmount}
                   onChange={(e) => setFormData({ ...formData, currentAmount: e.target.value })}
-                  className={`w-full pl-10 pr-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                    errors.currentAmount ? 'border-financial-negative' : 'border-cinematic-border'
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.currentAmount ? 'border-financial-negative' : 'border-cinematic-border'
+                    }`}
                   placeholder="0.00"
                 />
               </div>
@@ -241,6 +247,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ goal, onClose, onSubmit }) =
                 </label>
                 <select
                   value={formData.priority}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
                   className="w-full px-4 py-3 bg-cinematic-glass border border-cinematic-border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300"
                 >
@@ -259,6 +266,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ goal, onClose, onSubmit }) =
                   </label>
                   <select
                     value={formData.status}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
                     className="w-full px-4 py-3 bg-cinematic-glass border border-cinematic-border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300"
                   >
@@ -283,9 +291,8 @@ export const GoalForm: React.FC<GoalFormProps> = ({ goal, onClose, onSubmit }) =
                 value={formData.deadline}
                 onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
                 min={new Date().toISOString().split('T')[0]}
-                className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${
-                  errors.deadline ? 'border-financial-negative' : 'border-cinematic-border'
-                }`}
+                className={`w-full px-4 py-3 bg-cinematic-glass border rounded-lg text-cinematic-text focus:outline-none focus:border-cinema-green/50 transition-colors duration-300 ${errors.deadline ? 'border-financial-negative' : 'border-cinematic-border'
+                  }`}
               />
               {errors.deadline && <p className="text-financial-negative text-sm mt-1">{errors.deadline}</p>}
             </div>

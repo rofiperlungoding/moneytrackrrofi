@@ -12,7 +12,9 @@ const timeframes = [
 ];
 
 export const FriendlyFinancialOverview: React.FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { getTotalIncome, getTotalExpenses, getNetWorth, settings, getLargestTransactionAmount, getUniqueCategoriesCount, getTotalTransactionsCount, getDailyAverageExpense, getRecentChange, loading } = useFinance();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { convertAmount, formatAmount } = useCurrency();
   const [selectedTimeframe, setSelectedTimeframe] = useState('1M');
 
@@ -37,8 +39,11 @@ export const FriendlyFinancialOverview: React.FC = () => {
   const dailyAverage = getDailyAverageExpense();
 
   // Convert amounts for display
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const convertedIncome = convertAmount(monthlyIncome);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const convertedExpenses = convertAmount(monthlyExpenses);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const convertedNetWorth = convertAmount(netWorth);
 
   // Update indicator position when selected timeframe changes

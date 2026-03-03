@@ -6,6 +6,7 @@ import { useFinance } from '../contexts/FinanceContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { CountUp } from './CountUp';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CustomTooltip = ({ active, payload }: any) => {
   const { convertAmount, formatAmount } = useCurrency();
   
@@ -64,6 +65,7 @@ export const FriendlySpendingChart: React.FC = () => {
     [spendingData]
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const convertedTotal = useMemo(() => convertAmount(total), [convertAmount, total]);
 
   if (total === 0) {

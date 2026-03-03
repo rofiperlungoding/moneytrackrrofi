@@ -2,14 +2,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Globe, Settings } from 'lucide-react';
 import { useCurrency } from '../contexts/CurrencyContext';
-import { SUPPORTED_CURRENCIES } from '../utils/currency';
 
 interface CurrencySelectorProps {
   onGoToSettings: () => void;
 }
 
 export const CurrencySelector: React.FC<CurrencySelectorProps> = ({ onGoToSettings }) => {
-  const { currentCurrency } = useCurrency();
+  const { currentCurrency, availableCurrencies } = useCurrency();
+  const currSymbol = availableCurrencies.find(c => c.code === currentCurrency)?.symbol || '$';
 
   return (
     <motion.button
@@ -20,7 +20,7 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({ onGoToSettin
     >
       <Globe className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-cinema-green flex-shrink-0" />
       <span className="text-xs font-medium text-cinematic-text hidden sm:inline">
-        {SUPPORTED_CURRENCIES[currentCurrency]?.symbol}
+        {currSymbol}
       </span>
       <span className="text-xs font-medium text-cinematic-text hidden md:inline">
         {currentCurrency}

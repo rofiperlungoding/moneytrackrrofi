@@ -8,17 +8,23 @@ interface AuthContextType {
   session: Session | null;
   needsProfileSetup: boolean;
   loading: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   signUp: (email: string, password: string, fullName: string) => Promise<{ error?: any }>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   signIn: (email: string, password: string) => Promise<{ error?: any }>;
   signOut: () => Promise<void>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resetPassword: (email: string) => Promise<{ error?: any }>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateProfile: (updates: { full_name?: string; avatar_url?: string }) => Promise<{ error?: any }>;
-  deleteAccount: (reason?: string) => Promise<{ error?: any }>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  deleteAccount: (reason?: string) => Promise<{ error?: any; warning?: string; success?: boolean; localOnly?: boolean }>;
   completeProfileSetup: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -38,53 +44,67 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
+
       if (session?.user) {
         checkProfileSetup(session.user);
       }
-      
+
+      setLoading(false);
+    }).catch((err) => {
+      console.warn('Failed to get Supabase session (Supabase may not be configured):', err);
+      setUser(null);
+      setSession(null);
       setLoading(false);
     });
 
     // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        // If this is a sign-in event (not a fresh registration), clear any registration flags
-        if (event === 'SIGNED_IN') {
-          const justRegisteredKey = `just_registered_${session.user.id}`;
-          const wasJustRegistered = localStorage.getItem(justRegisteredKey) === 'true';
-          
-          // If user wasn't just registered (i.e., this is a regular login), clear the flag
-          if (!wasJustRegistered) {
-            localStorage.removeItem(justRegisteredKey);
-          }
-        }
-        
-        checkProfileSetup(session.user);
-      } else {
-        setNeedsProfileSetup(false);
-      }
-      
-      setLoading(false);
-    });
+    let subscription: { unsubscribe: () => void } | null = null;
+    try {
+      const {
+        data: { subscription: sub },
+      } = supabase.auth.onAuthStateChange(async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
 
-    return () => subscription.unsubscribe();
+        if (session?.user) {
+          // If this is a sign-in event (not a fresh registration), clear any registration flags
+          if (event === 'SIGNED_IN') {
+            const justRegisteredKey = `just_registered_${session.user.id}`;
+            const wasJustRegistered = localStorage.getItem(justRegisteredKey) === 'true';
+
+            // If user wasn't just registered (i.e., this is a regular login), clear the flag
+            if (!wasJustRegistered) {
+              localStorage.removeItem(justRegisteredKey);
+            }
+          }
+
+          checkProfileSetup(session.user);
+        } else {
+          setNeedsProfileSetup(false);
+        }
+
+        setLoading(false);
+      });
+      subscription = sub;
+    } catch (err) {
+      console.warn('Failed to set up auth state listener:', err);
+      setLoading(false);
+    }
+
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, []);
 
   const checkProfileSetup = (user: User) => {
     // Check if user just registered
     const justRegisteredKey = `just_registered_${user.id}`;
     const wasJustRegistered = localStorage.getItem(justRegisteredKey) === 'true';
-    
+
     // Check if user has completed profile setup
     const hasFullName = user.user_metadata?.full_name;
     const profileSetupComplete = localStorage.getItem(`profile_setup_complete_${user.id}`) === 'true';
-    
+
     // Only show profile setup if:
     // 1. User just registered AND
     // 2. User doesn't have a full name OR profile setup is not marked as complete
@@ -142,7 +162,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     const currentUserId = user?.id;
-    
+
     try {
       // Attempt to sign out from Supabase
       const { error } = await supabase.auth.signOut();
@@ -158,7 +178,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.removeItem(`just_registered_${currentUserId}`);
         localStorage.removeItem(`profile_setup_complete_${currentUserId}`);
       }
-      
+
       // Clear user state
       setUser(null);
       setSession(null);
@@ -210,27 +230,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       if (!supabaseUrl || supabaseUrl === 'YOUR_SUPABASE_URL') {
         console.warn('Supabase not configured, performing local deletion only');
-        
+
         // Clear local data immediately
         localStorage.clear();
-        
+
         // Clear user state
         setUser(null);
         setSession(null);
         setNeedsProfileSetup(false);
-        
+
         // Sign out the user
         await signOut();
-        
+
         return { success: true, localOnly: true };
       }
 
       try {
         // Try to call the Supabase Edge Function to delete the user
         const { data, error } = await supabase.functions.invoke('delete-user', {
-          body: { 
-            userId: user.id, 
-            reason: reason || 'User requested account deletion' 
+          body: {
+            userId: user.id,
+            reason: reason || 'User requested account deletion'
           },
           headers: {
             Authorization: `Bearer ${session.access_token}`,
@@ -240,7 +260,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (error) {
           console.error('Error calling delete-user function:', error);
-          
+
           // If the Edge Function fails, still clear local data and sign out
           console.warn('Edge Function failed, clearing local data and signing out...');
           localStorage.clear();
@@ -248,10 +268,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setSession(null);
           setNeedsProfileSetup(false);
           await signOut();
-          
-          return { 
-            success: true, 
-            warning: 'Account signed out locally. Contact support to ensure complete deletion.' 
+
+          return {
+            success: true,
+            warning: 'Account signed out locally. Contact support to ensure complete deletion.'
           };
         }
 
@@ -259,7 +279,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // If the Edge Function call was successful, clear local data
         localStorage.clear();
-        
+
         // Clear user state
         setUser(null);
         setSession(null);
@@ -268,7 +288,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: true, data };
       } catch (functionError) {
         console.error('Error invoking Edge Function:', functionError);
-        
+
         // Fallback: clear local data and sign out
         console.warn('Edge Function invocation failed, performing local cleanup...');
         localStorage.clear();
@@ -276,15 +296,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(null);
         setNeedsProfileSetup(false);
         await signOut();
-        
-        return { 
-          success: true, 
-          warning: 'Account signed out locally. Contact support to ensure complete deletion.' 
+
+        return {
+          success: true,
+          warning: 'Account signed out locally. Contact support to ensure complete deletion.'
         };
       }
     } catch (error) {
       console.error('Error in deleteAccount:', error);
-      
+
       // Last resort fallback: still clear local data
       try {
         localStorage.clear();
@@ -292,15 +312,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(null);
         setNeedsProfileSetup(false);
         await signOut();
-        
-        return { 
-          success: true, 
-          warning: 'Account signed out locally. Contact support to ensure complete deletion.' 
+
+        return {
+          success: true,
+          warning: 'Account signed out locally. Contact support to ensure complete deletion.'
         };
       } catch (fallbackError) {
         console.error('Even fallback failed:', fallbackError);
-        return { 
-          error: new Error('Unable to delete account. Please contact support.') 
+        return {
+          error: new Error('Unable to delete account. Please contact support.')
         };
       }
     }
@@ -310,10 +330,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (user) {
       // Mark profile setup as complete
       localStorage.setItem(`profile_setup_complete_${user.id}`, 'true');
-      
+
       // Clear the "just registered" flag since setup is now complete
       localStorage.removeItem(`just_registered_${user.id}`);
-      
+
       setNeedsProfileSetup(false);
     }
   };

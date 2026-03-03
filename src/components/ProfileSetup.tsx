@@ -4,13 +4,12 @@ import { User, Globe, Sparkles, ArrowRight, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useFinance } from '../contexts/FinanceContext';
 import { useCurrency } from '../contexts/CurrencyContext';
-import { SUPPORTED_CURRENCIES } from '../utils/currency';
 
 export const ProfileSetup: React.FC = () => {
   const { user, completeProfileSetup, updateProfile } = useAuth();
   const { updateSettings } = useFinance();
-  const { setCurrency } = useCurrency();
-  
+  const { setCurrency, availableCurrencies } = useCurrency();
+
   const [currentStep, setCurrentStep] = useState(1);
   const [profileData, setProfileData] = useState({
     name: user?.user_metadata?.full_name || '',
@@ -86,7 +85,7 @@ export const ProfileSetup: React.FC = () => {
             <p className="text-cinematic-text-secondary mb-6 text-base">
               Let's personalize your MoneyTrackr experience
             </p>
-            
+
             <div className="max-w-xs mx-auto">
               <input
                 type="text"
@@ -116,7 +115,7 @@ export const ProfileSetup: React.FC = () => {
             <p className="text-cinematic-text-secondary mb-6 text-base">
               Pick an avatar that represents you
             </p>
-            
+
             <div className="grid grid-cols-4 gap-3 max-w-xs mx-auto">
               {avatarOptions.map((avatar) => (
                 <motion.button
@@ -124,11 +123,10 @@ export const ProfileSetup: React.FC = () => {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setProfileData({ ...profileData, avatar })}
-                  className={`w-12 h-12 text-2xl rounded-xl border-2 transition-all ${
-                    profileData.avatar === avatar
+                  className={`w-12 h-12 text-2xl rounded-xl border-2 transition-all ${profileData.avatar === avatar
                       ? 'border-cinema-green bg-cinema-green/10 shadow-glow-green'
                       : 'border-cinematic-border hover:border-cinema-green/50 bg-cinematic-glass'
-                  }`}
+                    }`}
                 >
                   {avatar}
                 </motion.button>
@@ -153,28 +151,27 @@ export const ProfileSetup: React.FC = () => {
             <p className="text-cinematic-text-secondary mb-6 text-base">
               Choose your preferred currency for tracking finances
             </p>
-            
+
             <div className="max-w-sm mx-auto space-y-2">
-              {Object.entries(SUPPORTED_CURRENCIES).map(([code, currency]) => (
+              {availableCurrencies.map((currency) => (
                 <motion.button
-                  key={code}
+                  key={currency.code}
                   whileHover={{ scale: 1.02, x: 4 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => setProfileData({ ...profileData, currency: code })}
-                  className={`w-full flex items-center justify-between p-3 rounded-xl border-2 transition-all ${
-                    profileData.currency === code
+                  onClick={() => setProfileData({ ...profileData, currency: currency.code })}
+                  className={`w-full flex items-center justify-between p-3 rounded-xl border-2 transition-all ${profileData.currency === currency.code
                       ? 'border-cinema-green bg-cinema-green/10 shadow-glow-green'
                       : 'border-cinematic-border hover:border-cinema-green/50 bg-cinematic-glass'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center space-x-3">
                     <span className="text-xl">{currency.symbol}</span>
                     <div className="text-left">
-                      <p className="font-bold text-cinematic-text text-sm">{code}</p>
+                      <p className="font-bold text-cinematic-text text-sm">{currency.code}</p>
                       <p className="text-xs text-cinematic-text-secondary">{currency.name}</p>
                     </div>
                   </div>
-                  {profileData.currency === code && (
+                  {profileData.currency === currency.code && (
                     <CheckCircle className="w-4 h-4 text-cinema-green" />
                   )}
                 </motion.button>
@@ -231,7 +228,7 @@ export const ProfileSetup: React.FC = () => {
           {/* Background Effects */}
           <div className="absolute inset-0 bg-gradient-to-br from-cinema-green/5 to-cinema-emerald/5 rounded-3xl" />
           <motion.div
-            animate={{ 
+            animate={{
               scale: [1, 1.1, 1],
               opacity: [0.1, 0.3, 0.1]
             }}
@@ -246,9 +243,9 @@ export const ProfileSetup: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-center mb-6"
             >
-              <img 
-                src="/Money (2).png" 
-                alt="MoneyTrackr Logo" 
+              <img
+                src="/Money (2).png"
+                alt="MoneyTrackr Logo"
                 className="h-10 w-auto object-contain mx-auto mb-3"
               />
               <h1 className="text-xl font-bold text-cinematic-text font-cinematic mb-1">
@@ -269,11 +266,10 @@ export const ProfileSetup: React.FC = () => {
                 {Array.from({ length: totalSteps }, (_, i) => (
                   <div
                     key={i}
-                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                      i + 1 <= currentStep 
-                        ? 'bg-cinema-green shadow-glow-green' 
+                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${i + 1 <= currentStep
+                        ? 'bg-cinema-green shadow-glow-green'
                         : 'bg-cinematic-border'
-                    }`}
+                      }`}
                   />
                 ))}
               </div>
@@ -299,28 +295,26 @@ export const ProfileSetup: React.FC = () => {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
                 disabled={currentStep === 1}
-                className={`px-4 py-2.5 rounded-xl font-medium transition-all text-sm ${
-                  currentStep === 1
+                className={`px-4 py-2.5 rounded-xl font-medium transition-all text-sm ${currentStep === 1
                     ? 'bg-cinematic-glass text-cinematic-text-muted cursor-not-allowed'
                     : 'bg-cinematic-glass border border-cinematic-border text-cinematic-text hover:border-cinema-green/30'
-                }`}
+                  }`}
               >
                 Back
               </motion.button>
 
               <motion.button
-                whileHover={{ 
-                  scale: canProceed() ? 1.02 : 1, 
-                  boxShadow: canProceed() ? '0 0 30px rgba(34, 197, 94, 0.4)' : undefined 
+                whileHover={{
+                  scale: canProceed() ? 1.02 : 1,
+                  boxShadow: canProceed() ? '0 0 30px rgba(34, 197, 94, 0.4)' : undefined
                 }}
                 whileTap={{ scale: canProceed() ? 0.98 : 1 }}
                 onClick={handleNext}
                 disabled={!canProceed()}
-                className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium transition-all text-sm ${
-                  canProceed()
+                className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium transition-all text-sm ${canProceed()
                     ? 'bg-premium-green text-white hover:shadow-glow-green'
                     : 'bg-cinematic-glass text-cinematic-text-muted cursor-not-allowed'
-                }`}
+                  }`}
               >
                 <span>{currentStep === totalSteps ? 'Complete Setup' : 'Continue'}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -346,7 +340,7 @@ export const ProfileSetup: React.FC = () => {
                     {profileData.name || 'Your Name'}
                   </p>
                   <p className="text-xs text-cinematic-text-secondary">
-                    {SUPPORTED_CURRENCIES[profileData.currency]?.symbol} {profileData.currency}
+                    {availableCurrencies.find(c => c.code === profileData.currency)?.symbol || '$'} {profileData.currency}
                   </p>
                 </div>
               </div>

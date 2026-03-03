@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
@@ -17,6 +17,8 @@ import { PrivacyProvider } from './contexts/PrivacyContext';
 import { SecurityProvider } from './contexts/SecurityContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AuthPage } from './components/AuthPage';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { ReferenceDataProvider } from './contexts/ReferenceDataContext';
 
 function AppContent() {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -72,7 +74,7 @@ function AppContent() {
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {/* Main gradient overlay */}
         <div className="absolute inset-0 bg-cinematic-radial opacity-60" />
-        
+
         {/* Floating orbs */}
         <motion.div
           animate={{
@@ -86,7 +88,7 @@ function AppContent() {
           }}
           className="absolute top-1/4 left-1/3 w-80 h-80 bg-cinema-green/20 rounded-full blur-3xl"
         />
-        
+
         <motion.div
           animate={{
             scale: [1.2, 1, 1.2],
@@ -100,7 +102,7 @@ function AppContent() {
           }}
           className="absolute bottom-1/3 right-1/4 w-72 h-72 bg-cinema-emerald/15 rounded-full blur-3xl"
         />
-        
+
         <motion.div
           animate={{
             scale: [1, 1.3, 1],
@@ -114,7 +116,7 @@ function AppContent() {
           }}
           className="absolute top-1/2 left-1/4 w-56 h-56 bg-cinema-green-light/10 rounded-full blur-3xl"
         />
-        
+
         {/* Subtle grid pattern */}
         <div className="absolute inset-0 opacity-[0.02]" style={{
           backgroundImage: `radial-gradient(circle at 1px 1px, rgba(34, 197, 94, 0.5) 1px, transparent 0)`,
@@ -125,11 +127,11 @@ function AppContent() {
       <div className="flex h-screen relative z-10">
         {/* Sidebar */}
         <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
-        
+
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-w-0">
           <TopBar onSectionChange={setActiveSection} />
-          
+
           {/* Content Area */}
           <div className="flex-1 overflow-auto">
             <div className="p-6">
@@ -139,8 +141,8 @@ function AppContent() {
                   initial={{ opacity: 0, y: 20, scale: 0.98 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -20, scale: 0.98 }}
-                  transition={{ 
-                    duration: 0.5, 
+                  transition={{
+                    duration: 0.5,
                     ease: [0.25, 0.46, 0.45, 0.94],
                     type: "spring",
                     stiffness: 100
@@ -165,19 +167,23 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <SecurityProvider>
-        <PrivacyProvider>
-          <NotificationProvider>
-            <CurrencyProvider>
-              <FinanceProvider>
-                <AppContent />
-              </FinanceProvider>
-            </CurrencyProvider>
-          </NotificationProvider>
-        </PrivacyProvider>
-      </SecurityProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <SecurityProvider>
+          <PrivacyProvider>
+            <NotificationProvider>
+              <ReferenceDataProvider>
+                <CurrencyProvider>
+                  <FinanceProvider>
+                    <AppContent />
+                  </FinanceProvider>
+                </CurrencyProvider>
+              </ReferenceDataProvider>
+            </NotificationProvider>
+          </PrivacyProvider>
+        </SecurityProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
