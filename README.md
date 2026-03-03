@@ -17,6 +17,8 @@
 
 *MoneyTrackr is a modern, feature-rich personal finance application built with React & Supabase. It features a cinematic dark theme, multi-currency support, financial goal tracking, and a privacy-first approach to help you take control of your money.*
 
+[🚀 **Live Demo**](https://moneytrackrr.netlify.app) • [📧 **Contact**](mailto:rofi.darmawan@outlook.com) • [🐛 **Report Bug**](https://github.com/rofiperlungoding/moneytrackrrofi/issues)
+
 </div>
 
 ## ✨ Features
@@ -282,6 +284,8 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 <div align="center">
 
 **Made with ❤️ by [rofiperlungoding](https://github.com/rofiperlungoding)**
+
+📧 Contact: [rofi.darmawan@outlook.com](mailto:rofi.darmawan@outlook.com)
 
 [⬆ Back to Top](#-moneytrackr)
 
