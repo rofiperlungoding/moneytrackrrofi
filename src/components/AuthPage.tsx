@@ -26,7 +26,6 @@ export const AuthPage: React.FC = () => {
 
     try {
       if (isSignUp) {
-        // Validation for sign up
         if (formData.password !== formData.confirmPassword) {
           setMessage({ type: 'error', text: 'Passwords do not match' });
           setLoading(false);
@@ -84,20 +83,16 @@ export const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-cinematic-dark via-cinematic-base to-cinematic-surface text-cinematic-text font-editorial">
+    <div className="min-h-screen flex bg-gradient-to-br from-cinematic-dark via-cinematic-base to-cinematic-surface text-cinematic-text font-editorial overflow-x-hidden">
       {/* Cinematic Background Effects */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute inset-0 bg-cinematic-radial opacity-60" />
         <motion.div
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.6, 0.3],
           }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           className="absolute top-1/4 left-1/3 w-80 h-80 bg-cinema-green/20 rounded-full blur-3xl"
         />
         <motion.div
@@ -105,12 +100,7 @@ export const AuthPage: React.FC = () => {
             scale: [1.2, 1, 1.2],
             opacity: [0.2, 0.5, 0.2],
           }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
           className="absolute bottom-1/3 right-1/4 w-72 h-72 bg-cinema-emerald/15 rounded-full blur-3xl"
         />
         <div className="absolute inset-0 opacity-[0.02]" style={{
@@ -120,313 +110,232 @@ export const AuthPage: React.FC = () => {
       </div>
 
       {/* Two-Column Layout */}
-      <div className="relative z-10 w-full flex flex-col md:flex-row">
-        {/* Left Column - "Track your" with Rotating Text */}
+      <div className="relative z-10 w-full flex flex-col md:flex-row min-h-screen">
+        {/* Left Column - Hero Content */}
         <motion.div
-          initial={{ opacity: 0, x: -100 }}
+          initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-16"
+          className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-16 lg:p-24"
         >
           <div className="max-w-lg text-center md:text-left">
-            {/* Main Heading with Rotating Text */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="flex flex-col md:flex-row items-center gap-2 md:gap-2"
+              className="flex flex-col md:flex-row items-center md:items-start gap-2"
             >
-              {/* "Track your" text - white and static */}
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white font-cinematic leading-tight whitespace-nowrap">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white font-cinematic leading-tight whitespace-nowrap">
                 Track your
+                <span className="block md:inline ml-0 md:ml-3">
+                  <RotatingText
+                    phrases={['financial.', 'money.', 'future.', 'yourself.']}
+                    interval={2800}
+                    textClassName="text-cinema-green"
+                  />
+                </span>
               </h1>
-
-              {/* Rotating text with its own container - now green and animated */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-                className="relative"
-              >
-                <RotatingText
-                  phrases={['financial.', 'money.', 'future.', 'yourself.']}
-                  interval={2800}
-                  textClassName="text-2xl md:text-3xl lg:text-4xl text-cinema-green"
-                />
-              </motion.div>
             </motion.div>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.2 }}
+              className="mt-6 text-cinematic-text-secondary text-lg max-w-md hidden md:block"
+            >
+              Experience a premium cinematic interface for managing your wealth with elegance and precision.
+            </motion.p>
           </div>
         </motion.div>
 
-        {/* Right Column - Auth Panel with Logo */}
+        {/* Right Column - Auth Panel */}
         <motion.div
-          initial={{ opacity: 0, x: 100 }}
+          initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-          className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-16"
+          className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 lg:p-20"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 50 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5, type: "spring", stiffness: 100 }}
-            className="relative bg-cinematic-surface/90 backdrop-blur-premium border-2 border-cinema-green/20 rounded-3xl p-6 shadow-premium w-full max-w-xs"
+            layout
+            className="w-full max-w-md relative bg-cinematic-surface/80 backdrop-blur-premium border-2 border-cinema-green/20 rounded-[2.5rem] p-10 shadow-premium overflow-hidden"
           >
-            {/* Auth Panel Background Effects */}
-            <div className="absolute inset-0 bg-gradient-to-br from-cinema-green/5 to-cinema-emerald/5 rounded-3xl" />
-            <motion.div
-              animate={{
-                scale: [1, 1.1, 1],
-                opacity: [0.1, 0.3, 0.1]
-              }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute top-0 right-0 w-32 h-32 bg-cinema-green/10 rounded-full blur-2xl"
-            />
+            {/* Glossy Top Edge */}
+            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent z-20" />
 
             <div className="relative z-10">
-              {/* Logo and Auth Header */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.7 }}
-                className="text-center mb-6"
-              >
-                {/* Logo */}
+              <div className="text-center mb-10">
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.6, delay: 0.6 }}
-                  className="mb-4"
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="mb-6 inline-block"
                 >
-                  <img
-                    src="/Money (2).png"
-                    alt="MoneyTrackr Logo"
-                    className="h-12 w-auto object-contain mx-auto"
-                  />
+                  <img src="/Money (2).png" alt="MoneyTrackr Logo" className="h-14 w-auto drop-shadow-glow-green" />
                 </motion.div>
-
-                <h2 className="text-xl font-bold text-cinematic-text font-cinematic mb-2">
-                  {isSignUp ? 'Create Account' : 'Welcome Back'}
-                </h2>
-                <p className="text-cinematic-text-secondary text-sm">
-                  {isSignUp ? 'Start your financial journey' : 'Sign in to your account'}
+                <h2 className="text-2xl font-bold text-white mb-2">{isSignUp ? 'Join MoneyTrackr' : 'Welcome Back'}</h2>
+                <p className="text-cinematic-text-muted text-sm px-4">
+                  {isSignUp ? 'Create an account to start tracking your wealth in style.' : 'Sign in to access your cinematic dashboard.'}
                 </p>
-              </motion.div>
+              </div>
 
-              {/* Message Display */}
               <AnimatePresence>
                 {message && (
                   <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className={`mb-4 p-2.5 rounded-xl border flex items-center space-x-2 ${message.type === 'success'
-                        ? 'bg-cinema-green/10 border-cinema-green/30 text-cinema-green'
-                        : 'bg-financial-negative/10 border-financial-negative/30 text-financial-negative'
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className={`mb-6 p-4 rounded-2xl flex items-center space-x-3 border ${message.type === 'success' ? 'bg-cinema-green/10 border-cinema-green/30 text-cinema-green' : 'bg-red-500/10 border-red-500/30 text-red-500'
                       }`}
                   >
-                    {message.type === 'success' ? (
-                      <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                    ) : (
-                      <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                    )}
-                    <span className="text-xs">{message.text}</span>
+                    {message.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+                    <span className="text-sm font-medium">{message.text}</span>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* Auth Form */}
-              <motion.form
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.9 }}
-                onSubmit={handleSubmit}
-                className="space-y-3"
-              >
-                {/* Full Name (Sign Up Only) */}
-                {isSignUp && (
-                  <div>
-                    <label htmlFor="fullName" className="block text-xs font-medium text-cinematic-text mb-1.5">
-                      Full Name
-                    </label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-cinematic-text-secondary" />
-                      <input
-                        type="text"
-                        id="fullName"
-                        value={formData.fullName}
-                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                        placeholder="Enter your full name"
-                        className="w-full pl-9 pr-3 py-3 bg-cinematic-glass border border-cinematic-border rounded-xl text-cinematic-text placeholder-cinematic-text-muted focus:outline-none focus:border-cinema-green/50 focus:ring-2 focus:ring-cinema-green/20 transition-all duration-300 text-sm"
-                        required={isSignUp}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Email */}
-                <div>
-                  <label htmlFor="email" className="block text-xs font-medium text-cinematic-text mb-1.5">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-cinematic-text-secondary" />
-                    <input
-                      type="email"
-                      id="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="Enter your email"
-                      className="w-full pl-9 pr-3 py-3 bg-cinematic-glass border border-cinematic-border rounded-xl text-cinematic-text placeholder-cinematic-text-muted focus:outline-none focus:border-cinema-green/50 focus:ring-2 focus:ring-cinema-green/20 transition-all duration-300 text-sm"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Password */}
-                <div>
-                  <label htmlFor="password" className="block text-xs font-medium text-cinematic-text mb-1.5">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-cinematic-text-secondary" />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      id="password"
-                      value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      placeholder="Enter your password"
-                      className="w-full pl-9 pr-10 py-3 bg-cinematic-glass border border-cinematic-border rounded-xl text-cinematic-text placeholder-cinematic-text-muted focus:outline-none focus:border-cinema-green/50 focus:ring-2 focus:ring-cinema-green/20 transition-all duration-300 text-sm"
-                      required
-                      minLength={6}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-cinematic-text-secondary hover:text-cinematic-text transition-colors"
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <AnimatePresence mode="popLayout">
+                  {isSignUp && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
                     >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
+                      <div className="relative group">
+                        <div className="absolute left-0 top-0 bottom-0 w-12 flex items-center justify-center border-r border-white/5 bg-cinematic-dark/60 rounded-l-2xl z-10 transition-colors group-focus-within:bg-cinema-green/10">
+                          <User size={18} className="text-cinematic-text-muted group-focus-within:text-cinema-green transition-colors" />
+                        </div>
+                        <input
+                          type="text"
+                          required={isSignUp}
+                          value={formData.fullName}
+                          onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                          className="peer w-full pl-16 pr-4 py-4 bg-cinematic-dark/40 border-2 border-cinematic-border/20 rounded-2xl text-white placeholder-transparent focus:outline-none focus:border-cinema-green/50 focus:ring-4 focus:ring-cinema-green/5 transition-all"
+                          placeholder="Full Name"
+                          id="fullName"
+                        />
+                        <label htmlFor="fullName" className="absolute left-16 top-1/2 -translate-y-1/2 text-sm text-cinematic-text-muted transition-all peer-focus:top-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:scale-75 peer-[:not(:placeholder-shown)]:-translate-y-3 pointer-events-none origin-left bg-cinematic-surface-elevated px-1 rounded">Full Name</label>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="relative group">
+                  <div className="absolute left-0 top-0 bottom-0 w-12 flex items-center justify-center border-r border-white/5 bg-cinematic-dark/60 rounded-l-2xl z-10 transition-colors group-focus-within:bg-cinema-green/10">
+                    <Mail size={18} className="text-cinematic-text-muted group-focus-within:text-cinema-green transition-colors" />
                   </div>
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="peer w-full pl-16 pr-4 py-4 bg-cinematic-dark/40 border-2 border-cinematic-border/20 rounded-2xl text-white placeholder-transparent focus:outline-none focus:border-cinema-green/50 focus:ring-4 focus:ring-cinema-green/5 transition-all"
+                    placeholder="Email"
+                    id="email"
+                  />
+                  <label htmlFor="email" className="absolute left-16 top-1/2 -translate-y-1/2 text-sm text-cinematic-text-muted transition-all peer-focus:top-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:scale-75 peer-[:not(:placeholder-shown)]:-translate-y-3 pointer-events-none origin-left bg-cinematic-surface-elevated px-1 rounded">Email Address</label>
                 </div>
 
-                {/* Confirm Password (Sign Up Only) */}
-                {isSignUp && (
-                  <div>
-                    <label htmlFor="confirmPassword" className="block text-xs font-medium text-cinematic-text mb-1.5">
-                      Confirm Password
-                    </label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-cinematic-text-secondary" />
-                      <input
-                        type="password"
-                        id="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                        placeholder="Confirm your password"
-                        className="w-full pl-9 pr-3 py-3 bg-cinematic-glass border border-cinematic-border rounded-xl text-cinematic-text placeholder-cinematic-text-muted focus:outline-none focus:border-cinema-green/50 focus:ring-2 focus:ring-cinema-green/20 transition-all duration-300 text-sm"
-                        required={isSignUp}
-                      />
-                    </div>
+                <div className="relative group">
+                  <div className="absolute left-0 top-0 bottom-0 w-12 flex items-center justify-center border-r border-white/5 bg-cinematic-dark/60 rounded-l-2xl z-10 transition-colors group-focus-within:bg-cinema-green/10">
+                    <Lock size={18} className="text-cinematic-text-muted group-focus-within:text-cinema-green transition-colors" />
                   </div>
-                )}
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    minLength={6}
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="peer w-full pl-16 pr-12 py-4 bg-cinematic-dark/40 border-2 border-cinematic-border/20 rounded-2xl text-white placeholder-transparent focus:outline-none focus:border-cinema-green/50 focus:ring-4 focus:ring-cinema-green/5 transition-all"
+                    placeholder="Password"
+                    id="password"
+                  />
+                  <label htmlFor="password" className="absolute left-16 top-1/2 -translate-y-1/2 text-sm text-cinematic-text-muted transition-all peer-focus:top-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:scale-75 peer-[:not(:placeholder-shown)]:-translate-y-3 pointer-events-none origin-left bg-cinematic-surface-elevated px-1 rounded">Password</label>
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-cinematic-text-muted hover:text-white transition-colors">
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
 
-                {/* Submit Button */}
+                <AnimatePresence mode="popLayout">
+                  {isSignUp && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="relative group">
+                        <div className="absolute left-0 top-0 bottom-0 w-12 flex items-center justify-center border-r border-white/5 bg-cinematic-dark/60 rounded-l-2xl z-10 transition-colors group-focus-within:bg-cinema-green/10">
+                          <Lock size={18} className="text-cinematic-text-muted group-focus-within:text-cinema-green transition-colors" />
+                        </div>
+                        <input
+                          type="password"
+                          required={isSignUp}
+                          value={formData.confirmPassword}
+                          onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                          className="peer w-full pl-16 pr-4 py-4 bg-cinematic-dark/40 border-2 border-cinematic-border/20 rounded-2xl text-white placeholder-transparent focus:outline-none focus:border-cinema-green/50 focus:ring-4 focus:ring-cinema-green/5 transition-all"
+                          placeholder="Confirm Password"
+                          id="confirmPassword"
+                        />
+                        <label htmlFor="confirmPassword" className="absolute left-16 top-1/2 -translate-y-1/2 text-sm text-cinematic-text-muted transition-all peer-focus:top-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:scale-75 peer-[:not(:placeholder-shown)]:-translate-y-3 pointer-events-none origin-left bg-cinematic-surface-elevated px-1 rounded">Confirm Password</label>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 <motion.button
-                  whileHover={{
-                    scale: 1.02,
-                    boxShadow: '0 0 30px rgba(34, 197, 94, 0.4)'
-                  }}
+                  whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(34, 197, 94, 0.4)' }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
                   disabled={loading}
-                  className="w-full flex items-center justify-center space-x-2 bg-premium-green text-white px-4 py-3 rounded-xl font-medium hover:shadow-glow-green transition-all duration-300 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="w-full py-5 bg-premium-green rounded-2xl text-white font-bold text-lg relative overflow-hidden group shadow-glow-green disabled:opacity-50"
                 >
-                  {/* Button Background Animation */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-cinema-green-dark to-cinema-green-light opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                  <div className="relative z-10 flex items-center space-x-2">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 translate-x-[-150%] group-hover:animate-shimmer" />
+                  <div className="relative z-10 flex items-center justify-center space-x-2">
                     {loading ? (
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
                       <>
-                        {isSignUp ? <User className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
-                        <span>{isSignUp ? 'Create Account' : 'Sign In'}</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
+                        <span>{isSignUp ? 'Create My Account' : 'Sign In To Vault'}</span>
+                        <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                       </>
                     )}
                   </div>
                 </motion.button>
+              </form>
 
-                {/* Forgot Password (Sign In Only) */}
-                {!isSignUp && (
-                  <motion.button
-                    type="button"
-                    onClick={handleForgotPassword}
-                    disabled={loading}
-                    className="w-full text-cinema-green hover:text-cinema-green-light transition-colors text-xs font-medium disabled:opacity-50"
-                  >
-                    Forgot your password?
-                  </motion.button>
-                )}
-              </motion.form>
+              {!isSignUp && (
+                <button
+                  onClick={handleForgotPassword}
+                  className="w-full mt-4 text-cinema-green hover:text-cinema-green-light text-sm font-medium transition-colors"
+                >
+                  Forgot password?
+                </button>
+              )}
 
-              {/* Toggle Auth Mode */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 1.1 }}
-                className="mt-4 text-center"
-              >
-                <p className="text-xs text-cinematic-text-secondary">
-                  {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+              <div className="mt-10 pt-8 border-t border-white/5 text-center">
+                <p className="text-cinematic-text-muted text-sm">
+                  {isSignUp ? 'Already a member?' : "New to MoneyTrackr?"}{' '}
                   <button
-                    type="button"
                     onClick={() => {
                       setIsSignUp(!isSignUp);
                       setMessage(null);
-                      setFormData({ email: '', password: '', fullName: '', confirmPassword: '' });
                     }}
-                    className="text-cinema-green hover:text-cinema-green-light transition-colors font-medium"
+                    className="text-cinema-green hover:text-cinema-green-light font-bold transition-colors ml-1"
                   >
-                    {isSignUp ? 'Sign In' : 'Sign Up'}
+                    {isSignUp ? 'Sign In' : 'Join Now'}
                   </button>
                 </p>
-              </motion.div>
-
-              {/* Footer */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 1.2 }}
-                className="mt-6 text-center"
-              >
-                <p className="text-xs text-cinematic-text-muted">
-                  By continuing, you agree to our{' '}
-                  <a href="#" className="text-cinema-green hover:text-cinema-green-light transition-colors">
-                    Terms of Service
-                  </a>{' '}
-                  and{' '}
-                  <a href="#" className="text-cinema-green hover:text-cinema-green-light transition-colors">
-                    Privacy Policy
-                  </a>
-                </p>
-
-                {/* Trust Indicators */}
-                <div className="flex items-center justify-center space-x-3 mt-3">
-                  <div className="flex items-center space-x-1">
-                    <Shield className="w-2.5 h-2.5 text-cinema-emerald" />
-                    <span className="text-xs text-cinematic-text-muted">Secure</span>
+                <div className="flex justify-center space-x-6 mt-8">
+                  <div className="flex flex-col items-center">
+                    <Shield size={16} className="text-cinema-green mb-1 opacity-60" />
+                    <span className="text-[10px] uppercase tracking-widest text-cinematic-text-muted">Secure Vault</span>
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <Zap className="w-2.5 h-2.5 text-cinema-green-light" />
-                    <span className="text-xs text-cinematic-text-muted">Fast</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Target className="w-2.5 h-2.5 text-premium-gold" />
-                    <span className="text-xs text-cinematic-text-muted">Reliable</span>
+                  <div className="flex flex-col items-center">
+                    <Zap size={16} className="text-cinema-green mb-1 opacity-60" />
+                    <span className="text-[10px] uppercase tracking-widest text-cinematic-text-muted">Instant Access</span>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         </motion.div>
