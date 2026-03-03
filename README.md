@@ -8,321 +8,283 @@
 
 [![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.4.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Vite](https://img.shields.io/badge/Vite-7.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.1-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
 
 ---
 
-*MoneyTrackr is a modern, feature-rich personal finance application that helps you take control of your financial life with beautiful design, powerful analytics, and privacy-first approach.*
-
-[🚀 **Live Demo**](#) • [📚 **Documentation**](#) • [🐛 **Report Bug**](#) • [✨ **Request Feature**](#)
+*MoneyTrackr is a modern, feature-rich personal finance application built with React & Supabase. It features a cinematic dark theme, multi-currency support, financial goal tracking, and a privacy-first approach to help you take control of your money.*
 
 </div>
 
 ## ✨ Features
 
-### 💳 **Financial Management**
-- **Smart Expense Tracking** - Categorize and monitor your spending with detailed analytics
-- **Income Management** - Track multiple income sources and recurring payments
-- **Goal Setting** - Set and achieve savings goals with progress tracking
-- **Budget Controls** - Set spending limits and receive intelligent alerts
+### 💳 Financial Management
+- **Smart Expense Tracking** — Categorize and monitor spending with detailed analytics
+- **Income Management** — Track multiple income sources and recurring payments
+- **Goal Setting** — Set and achieve savings goals with visual progress tracking
+- **Budget Controls** — Set spending limits and receive intelligent alerts
 
-### 🔐 **Authentication & Security**
-- **Secure User Authentication** - Email/password registration and login with Supabase
-- **Two-Factor Authentication** - Enhanced security with email and phone verification
-- **Account Management** - Complete profile setup and account deletion functionality
-- **Session Management** - Automatic session handling and timeout controls
+### 🔐 Authentication & Security
+- **Supabase Auth** — Secure email/password registration and login
+- **Two-Factor Authentication** — Email and phone verification via OTP
+- **Session Management** — Automatic token refresh and timeout controls
+- **Complete Account Deletion** — Permanently remove your account and all server-side data
 
-### 🌍 **Multi-Currency Support**
-- **Real-time Exchange Rates** - Automatic currency conversion and rate updates
-- **Global Accessibility** - Support for USD, EUR, GBP, JPY, IDR and more
-- **Currency Switching** - Seamlessly switch between different currencies
+### 🌍 Multi-Currency Support
+- **15+ Currencies** — USD, EUR, GBP, JPY, IDR, SGD, AUD, CAD, CHF, CNY, KRW, MYR, THB, PHP, INR
+- **Custom Currencies** — Add your own currencies via Reference Data Management
+- **Live Conversion** — Seamlessly switch between currencies app-wide
 
-### 📊 **Advanced Analytics**
-- **Interactive Dashboards** - Beautiful charts and visualizations
-- **Spending Insights** - Detailed breakdowns by category and time period
-- **Trend Analysis** - Track your financial progress over time
-- **Custom Reports** - Generate detailed financial reports
+### 📊 Advanced Analytics
+- **Interactive Dashboard** — Charts powered by Recharts (pie, bar, line)
+- **Spending Insights** — Breakdowns by category and time period
+- **Budget Progress** — Visual budget utilization indicators
+- **Financial Overview** — Net worth, income vs expenses, and trend analysis
 
-### 🎨 **Premium User Experience**
-- **Cinematic Design** - Dark theme with stunning green accent colors
-- **Smooth Animations** - Powered by Framer Motion and GSAP
-- **Responsive Layout** - Perfect experience across all devices
-- **Micro-interactions** - Delightful hover effects and transitions
+### 🎨 Premium User Experience
+- **Cinematic Dark Theme** — Deep backgrounds with vibrant green accents
+- **Smooth Animations** — Powered by Framer Motion and GSAP
+- **Responsive Layout** — Sidebar navigation, works on desktop and mobile
+- **Micro-interactions** — Hover effects, count-up animations, rotating text
 
-### 🔒 **Privacy & Data Management**
-- **Privacy First** - GDPR compliant with full data control
-- **Complete Account Deletion** - Permanently remove your account and all data from servers
-- **Data Export** - Export your data anytime in JSON format
-- **Local Storage** - Option to keep data locally with cloud sync
+### 🔒 Privacy & Data Management
+- **Privacy First** — GDPR-compliant cookie banner and privacy controls
+- **Data Export** — Export all your data in JSON format
+- **Local Storage Fallback** — Works offline without Supabase configured
+- **Reference Data Management** — Customize categories, payment methods, and currencies
 
-### 🔔 **Smart Notifications**
-- **Budget Alerts** - Get notified when approaching spending limits
-- **Goal Reminders** - Stay motivated with progress updates
-- **Security Notifications** - Monitor account activity and changes
+### 🔔 Smart Notifications
+- **Budget Alerts** — Notified when approaching spending limits
+- **Goal Reminders** — Progress updates to keep you motivated
+- **Security Notifications** — Account activity monitoring
 
-## 🛠️ Technology Stack
+---
 
-### **Frontend**
-- **React 18** - Modern React with hooks and context
-- **TypeScript** - Type-safe development experience
-- **Tailwind CSS** - Utility-first CSS framework
-- **Framer Motion** - Production-ready motion library
-- **GSAP** - Professional-grade animation library
+## 🛠️ Tech Stack
 
-### **Backend & Database**
-- **Supabase** - Open source Firebase alternative
-  - Authentication & User Management
-  - PostgreSQL Database
-  - Real-time subscriptions
-  - Edge Functions for server-side logic
-  - Row Level Security (RLS)
+| Layer | Technology |
+|-------|-----------|
+| **UI Framework** | React 18 with Hooks & Context API |
+| **Language** | TypeScript 5.5 |
+| **Styling** | Tailwind CSS 3.4 (custom cinematic theme) |
+| **Animations** | Framer Motion + GSAP |
+| **Charts** | Recharts |
+| **Icons** | Lucide React |
+| **Backend** | Supabase (Auth, PostgreSQL, RLS, Edge Functions) |
+| **Build Tool** | Vite 7.3 |
+| **Linting** | ESLint 9 + TypeScript ESLint |
+| **Date Utils** | date-fns |
 
-### **Data Visualization**
-- **Recharts** - Composable charting library built on React components
-- **Custom Charts** - Beautiful pie charts, line graphs, and progress indicators
-
-### **Development Tools**
-- **Vite** - Next generation frontend tooling
-- **ESLint** - Code quality and consistency
-- **PostCSS** - CSS processing and optimization
-
-### **Icons & Assets**
-- **Lucide React** - Beautiful & consistent icon family
-- **Custom Graphics** - Handcrafted illustrations and graphics
+---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-Make sure you have the following installed:
-- **Node.js** (version 18.0.0 or higher)
-- **npm** or **yarn** package manager
-- **Supabase Account** (for backend services)
+- **Node.js** ≥ 18.0.0
+- **npm** package manager
+- **Supabase** account ([supabase.com](https://supabase.com))
 
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/moneytrackr.git
-   cd moneytrackr
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up Supabase**
-   
-   Create a new Supabase project at [supabase.com](https://supabase.com)
-   
-   Copy `.env.example` to `.env` and add your Supabase credentials:
-   ```bash
-   cp .env.example .env
-   ```
-   
-   Update the `.env` file with your Supabase project details:
-   ```
-   VITE_SUPABASE_URL=your_supabase_url_here
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
-   ```
-
-4. **Deploy the Edge Function** (for account deletion)
-   
-   Install the Supabase CLI and deploy the delete-user function:
-   ```bash
-   # Install Supabase CLI
-   npm install -g @supabase/cli
-   
-   # Deploy the edge function
-   supabase functions deploy delete-user
-   ```
-
-5. **Start the development server**
-   ```bash
-   npm run dev
-   ```
-
-6. **Open your browser**
-   
-   Navigate to `http://localhost:5173` to see the application running.
-
-### Build for Production
+### 1. Clone & Install
 
 ```bash
-# Create optimized production build
-npm run build
-
-# Preview production build locally
-npm run preview
+git clone https://github.com/rofiperlungoding/moneytrackrrofi.git
+cd moneytrackrrofi
+npm install
 ```
 
-## 📱 Usage Guide
+### 2. Set Up Supabase
 
-### **Getting Started**
-1. **Create Account** - Sign up with email and password
-2. **Complete Profile Setup** - Set up your name, avatar, and preferred currency
-3. **Add Your First Transaction** - Record an expense or income to get started
-4. **Set Financial Goals** - Create savings targets or spending limits
-5. **Explore the Dashboard** - View your financial overview and insights
+Create a new Supabase project, then create a `.env` file:
 
-### **Key Features Usage**
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-#### **Account Management**
-- **Profile Setup** - Complete your profile during first login
-- **Two-Factor Authentication** - Enable 2FA for enhanced security
-- **Account Deletion** - Permanently delete your account and all data
+### 3. Set Up the Database
 
-#### **Adding Transactions**
-- Use the floating "+" button for quick access
-- Fill in amount, description, category, and payment method
-- Add receipts and notes for better tracking
+Run the SQL in `setup-database.sql` in your Supabase SQL Editor. This creates all required tables with RLS policies:
 
-#### **Managing Goals**
-- Set savings targets with deadlines
-- Create expense limits for specific categories
-- Track progress with visual indicators
+- `transactions` — Income and expense records
+- `goals` — Financial goals with progress tracking
+- `user_settings` — Per-user preferences and configuration
+- `categories` — Transaction categories (with defaults)
+- `payment_methods` — Payment method options (with defaults)
+- `currencies` — Supported currencies (with defaults)
 
-#### **Customizing Experience**
-- Switch currencies in real-time
-- Adjust privacy settings and data visibility
-- Customize appearance and notifications
+### 4. Start Development
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:5173` in your browser.
+
+### Available Scripts
+
+| Script | Command | Description |
+|--------|---------|-------------|
+| **Dev** | `npm run dev` | Start Vite dev server |
+| **Build** | `npm run build` | Production build |
+| **Preview** | `npm run preview` | Preview production build |
+| **Lint** | `npm run lint` | Run ESLint (shows ✅ on success) |
+
+---
 
 ## 📁 Project Structure
 
 ```
-moneytrackr/
-├── public/                 # Static assets
-│   └── Money (2).png      # Application logo
+MoneyTrackr/
+├── public/
+│   └── Money (2).png              # App logo
 ├── src/
-│   ├── components/        # React components
-│   │   ├── Dashboard.tsx  # Main dashboard component
-│   │   ├── AuthPage.tsx   # Authentication page
-│   │   ├── ExpenseTracker.tsx
-│   │   ├── IncomeTracker.tsx
-│   │   ├── Goals.tsx
-│   │   ├── Settings.tsx   # Settings and profile management
-│   │   └── ...
-│   ├── contexts/          # React context providers
-│   │   ├── AuthContext.tsx      # Authentication and user management
-│   │   ├── FinanceContext.tsx   # Financial data management
-│   │   ├── CurrencyContext.tsx  # Multi-currency support
-│   │   ├── SecurityContext.tsx  # Security features
-│   │   └── ...
-│   ├── lib/              # External service configurations
-│   │   └── supabase.ts   # Supabase client configuration
-│   ├── utils/            # Utility functions
-│   │   ├── currency.ts   # Currency conversion utilities
-│   │   └── financialStatus.ts
-│   ├── App.tsx          # Main application component
-│   ├── main.tsx         # Application entry point
-│   └── index.css        # Global styles
-├── supabase/
-│   └── functions/       # Supabase Edge Functions
-│       └── delete-user/ # Account deletion function
-├── package.json         # Dependencies and scripts
-├── tailwind.config.js   # Tailwind CSS configuration
-├── vite.config.ts       # Vite configuration
-└── README.md           # Project documentation
+│   ├── components/                # React components (27 files)
+│   │   ├── AuthPage.tsx           # Login & registration
+│   │   ├── Dashboard.tsx          # Main financial overview
+│   │   ├── ExpenseTracker.tsx     # Expense list & management
+│   │   ├── ExpenseForm.tsx        # Add/edit expense form
+│   │   ├── IncomeTracker.tsx      # Income list & management
+│   │   ├── IncomeForm.tsx         # Add/edit income form
+│   │   ├── Goals.tsx              # Goals list & management
+│   │   ├── GoalForm.tsx           # Add/edit goal form
+│   │   ├── Settings.tsx           # User settings & profile
+│   │   ├── Sidebar.tsx            # Navigation sidebar
+│   │   ├── TopBar.tsx             # Top navigation bar
+│   │   ├── DataManagementSettings.tsx  # Manage categories/currencies/methods
+│   │   ├── FriendlyFinancialOverview.tsx
+│   │   ├── FriendlyBudgetProgress.tsx
+│   │   ├── FriendlyRecentTransactions.tsx
+│   │   ├── FriendlySpendingChart.tsx
+│   │   ├── CookieBanner.tsx       # GDPR cookie consent
+│   │   ├── CurrencySelector.tsx   # Currency picker
+│   │   ├── ErrorBoundary.tsx      # Error boundary wrapper
+│   │   ├── NotificationCenter.tsx # Notification dropdown
+│   │   ├── ProfileSetup.tsx       # First-time profile setup
+│   │   ├── QuickAddButton.tsx     # Floating action button
+│   │   ├── SecurityDashboard.tsx  # Security overview
+│   │   ├── TwoFactorAuthSetup.tsx # 2FA configuration
+│   │   ├── CountUp.tsx            # Animated number counter
+│   │   ├── RotatingText.tsx       # Text animation component
+│   │   └── SplitText.tsx          # Text split animation
+│   ├── contexts/                  # React Context providers (7 files)
+│   │   ├── AuthContext.tsx        # Authentication & user state
+│   │   ├── FinanceContext.tsx     # Transactions, goals, settings
+│   │   ├── CurrencyContext.tsx    # Currency conversion
+│   │   ├── ReferenceDataContext.tsx # Categories, methods, currencies CRUD
+│   │   ├── NotificationContext.tsx # Notification state
+│   │   ├── PrivacyContext.tsx     # Privacy & cookie preferences
+│   │   └── SecurityContext.tsx    # 2FA & security state
+│   ├── lib/
+│   │   └── supabase.ts           # Supabase client init
+│   ├── utils/
+│   │   └── currency.ts           # Currency formatting helpers
+│   ├── App.tsx                    # Root app with providers
+│   ├── main.tsx                   # Entry point
+│   └── index.css                  # Global styles & Tailwind
+├── setup-database.sql             # Full Supabase SQL schema
+├── package.json
+├── tailwind.config.js
+├── vite.config.ts
+├── eslint.config.js
+└── tsconfig.json
 ```
+
+---
 
 ## 🔧 Supabase Setup
 
-### **Required Tables**
-The application uses Supabase's built-in authentication system. No additional tables are required for basic functionality as the app primarily uses local storage with optional cloud sync.
+### Database Tables
 
-### **Edge Functions**
-- **delete-user** - Handles permanent account deletion from the server
+All tables use **Row Level Security (RLS)** — users can only access their own data.
 
-### **Authentication Configuration**
-1. Enable email authentication in your Supabase project
-2. Configure email templates (optional)
-3. Set up proper RLS policies if you add custom tables
+| Table | Purpose |
+|-------|---------|
+| `transactions` | Income & expense records with category, amount, date, notes |
+| `goals` | Savings/spending goals with target amounts and deadlines |
+| `user_settings` | Currency preference, theme, notification settings |
+| `categories` | Transaction categories (defaults + user-created) |
+| `payment_methods` | Payment options (defaults + user-created) |
+| `currencies` | Supported currencies (defaults + user-created) |
+
+### Edge Functions
+
+- **`delete-user`** — Server-side permanent account deletion (requires Supabase CLI to deploy)
+
+### Authentication
+
+Email/password auth is used. Enable it in your Supabase dashboard under **Authentication → Providers**.
+
+---
 
 ## 🎯 Key Components
 
-### **Core Components**
-- **AuthPage** - Registration and login interface
-- **Dashboard** - Financial overview and quick insights
-- **ExpenseTracker** - Detailed expense management
-- **IncomeTracker** - Income source management
-- **Goals** - Financial goal setting and tracking
-- **Settings** - User preferences and security
+### Pages
+| Component | Description |
+|-----------|-------------|
+| `AuthPage` | Login, registration, password reset |
+| `Dashboard` | Financial overview with charts and quick stats |
+| `ExpenseTracker` | Full expense history with filters and search |
+| `IncomeTracker` | Income management with source tracking |
+| `Goals` | Goal creation, progress tracking, contributions |
+| `Settings` | Profile, security, privacy, data management |
 
-### **Context Providers**
-- **AuthContext** - User authentication and account management
-- **FinanceContext** - Financial data management
-- **CurrencyContext** - Multi-currency support
-- **SecurityContext** - Security features and 2FA
-- **NotificationContext** - Alert and notification system
+### Context Providers
+| Context | Responsibility |
+|---------|---------------|
+| `AuthContext` | User auth state, login/logout, profile |
+| `FinanceContext` | CRUD for transactions, goals, settings; Supabase sync |
+| `CurrencyContext` | Active currency, conversion rates |
+| `ReferenceDataContext` | CRUD for categories, payment methods, currencies |
+| `NotificationContext` | In-app notification queue |
+| `PrivacyContext` | Cookie consent, privacy preferences |
+| `SecurityContext` | 2FA state, security settings |
 
-## 🔐 Security Features
+---
 
-### **Authentication**
-- Secure email/password authentication via Supabase
-- Session management with automatic token refresh
-- Password reset functionality
+## 🔐 Security
 
-### **Two-Factor Authentication**
-- Email verification codes
-- Phone number verification (demo implementation)
-- Secure OTP generation and validation
+- **Supabase Auth** — Secure token-based authentication
+- **Row Level Security** — Database-level access control
+- **Two-Factor Auth** — Email/phone OTP verification
+- **Session Management** — Auto-refresh with configurable timeout
+- **Account Deletion** — Full server-side data wipe via Edge Function
+- **GDPR Compliance** — Cookie banner with granular consent
 
-### **Data Protection**
-- Row Level Security (RLS) in Supabase
-- Secure API endpoints with proper authorization
-- Complete account deletion with server-side cleanup
+---
 
 ## 🤝 Contributing
 
-We welcome contributions from the community! Here's how you can help:
-
-### **Ways to Contribute**
-- 🐛 **Bug Reports** - Report issues and help improve stability
-- ✨ **Feature Requests** - Suggest new features and enhancements
-- 📝 **Documentation** - Improve docs and add examples
-- 🧑‍💻 **Code Contributions** - Submit pull requests with improvements
-
-### **Development Process**
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes and test thoroughly
-4. Commit your changes (`git commit -m 'Add amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
+3. Make changes and ensure `npm run lint` passes
+4. Commit (`git commit -m 'Add amazing feature'`)
+5. Push (`git push origin feature/amazing-feature`)
 6. Open a Pull Request
 
-### **Code Guidelines**
-- Follow TypeScript best practices
+### Code Guidelines
+- Follow TypeScript strict mode
 - Use meaningful component and variable names
-- Add comments for complex logic
-- Ensure responsive design compatibility
-- Test on multiple browsers and devices
-- Follow Supabase security best practices
+- Ensure responsive design
+- All new components must pass ESLint
+
+---
 
 ## 📄 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **React Team** - For the amazing React library
-- **Supabase** - For the excellent backend-as-a-service platform
-- **Tailwind CSS** - For the utility-first CSS framework
-- **Framer Motion** - For beautiful animations
-- **Lucide** - For the consistent icon system
-- **Community** - For feedback and contributions
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
 ---
 
 <div align="center">
 
-**Made with ❤️ and ☕ by passionate developers**
+**Made with ❤️ by [rofiperlungoding](https://github.com/rofiperlungoding)**
 
 [⬆ Back to Top](#-moneytrackr)
 
-*If you found this project helpful, please consider giving it a ⭐ star!*
+*If you found this helpful, give it a ⭐!*
 
 </div>
